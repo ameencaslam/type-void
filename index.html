@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Constellation - Fast-Paced Typing Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="gameContainer">
+      <div id="header">
+        <h1>✨ Word Constellation ✨</h1>
+        <div id="gameStats">
+          <span id="score">Score 0</span>
+          <span id="combo">Combo 0x</span>
+          <span id="wpm">WPM 0</span>
+          <span id="timer">Time 60s</span>
+          <span id="highScore">High Score 0</span>
+        </div>
+      </div>
+
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- Fruit Ninja Style Combo Display -->
+      <div id="comboDisplay">
+        <div class="combo-text" id="comboText">COMBO</div>
+        <div class="combo-multiplier" id="comboMultiplier">2X</div>
+      </div>
+
+      <div id="gameUI">
+        <div id="currentWord">
+          <div id="wordContainer">
+            <div id="wordLabel">Type this word:</div>
+            <div id="wordDisplay"></div>
+            <div id="typingIndicator">
+              <div id="cursor"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="instructions">
+          <p>Type each word as fast as you can to build your combo!</p>
+          <p>
+            Press <strong>SPACE</strong> to start • <strong>ESC</strong> to
+            restart
+          </p>
+        </div>
+
+        <div id="gameOver" class="hidden">
+          <div class="game-over-content">
+            <h2>Game Over!</h2>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Final Score</div>
+                <div class="stat-value" id="finalScore">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Words Typed</div>
+                <div class="stat-value" id="wordsCompleted">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Best Combo</div>
+                <div class="stat-value" id="bestCombo">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">High Score</div>
+                <div class="stat-value" id="gameOverHighScore">0</div>
+              </div>
+            </div>
+            <p
+              id="newHighScore"
+              style="
+                display: none;
+                color: #4ecdc4;
+                font-weight: bold;
+                font-size: 1.5em;
+                margin: 20px 0;
+              "
+            >
+              🎉 NEW HIGH SCORE! 🎉
+            </p>
+            <button onclick="startGame()">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>
