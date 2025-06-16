@@ -91,6 +91,7 @@ class WordConstellation {
     document.getElementById("gameCanvas").style.display = "block";
     document.getElementById("currentWord").style.display = "block";
     document.getElementById("instructions").style.display = "block";
+    document.getElementById("timerContainer").style.display = "block";
     document.getElementById("gameOver").style.display = "none";
     document.getElementById("gameOver").classList.add("hidden");
     document.getElementById("instructions").classList.add("hidden");
@@ -131,6 +132,7 @@ class WordConstellation {
     document.getElementById("gameCanvas").style.display = "none";
     document.getElementById("currentWord").style.display = "none";
     document.getElementById("instructions").style.display = "none";
+    document.getElementById("timerContainer").style.display = "none";
     document.getElementById("gameOver").style.display = "flex";
     document.getElementById("gameOver").classList.remove("hidden");
 

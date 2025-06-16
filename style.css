@@ -64,22 +64,31 @@ body {
   text-shadow: 0 0 10px #4ecdc4;
 }
 
-/* Prominent Timer Design */
+/* Independent Timer Design */
+#timerContainer {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 50;
+}
+
 #timer {
   background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
   color: #ffffff !important;
-  font-size: 1.4em !important;
+  font-size: 1.8em !important;
   font-weight: 900 !important;
-  padding: 12px 25px !important;
-  margin: 0 20px !important;
-  border-radius: 30px !important;
-  border: 3px solid #ff5252 !important;
-  box-shadow: 0 0 20px rgba(255, 107, 107, 0.6),
-    inset 0 2px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.2) !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  padding: 20px 35px !important;
+  margin: 0 !important;
+  border-radius: 50px !important;
+  border: 4px solid #ff5252 !important;
+  box-shadow: 0 0 25px rgba(255, 107, 107, 0.7),
+    inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 -3px 0 rgba(0, 0, 0, 0.3) !important;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4) !important;
   text-transform: uppercase !important;
-  letter-spacing: 2px !important;
+  letter-spacing: 3px !important;
   animation: timerPulse 2s ease-in-out infinite !important;
+  min-width: 140px !important;
+  text-align: center !important;
 }
 
 @keyframes timerPulse {
@@ -275,13 +284,70 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  background: radial-gradient(
+      circle at 20% 50%,
+      rgba(255, 107, 107, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(78, 205, 196, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(168, 85, 247, 0.1) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      #0a0a0f 0%,
+      #1a1a2e 25%,
+      #16213e 50%,
+      #1a1a2e 75%,
+      #0f0f23 100%
+    );
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   animation: gameOverAppear 0.5s ease-out;
+  overflow: hidden;
+}
+
+#gameOver::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 98px,
+      rgba(78, 205, 196, 0.03) 100px,
+      rgba(78, 205, 196, 0.03) 102px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 98px,
+      rgba(255, 107, 107, 0.02) 100px,
+      rgba(255, 107, 107, 0.02) 102px
+    );
+  pointer-events: none;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(100px, 100px);
+  }
 }
 
 @keyframes gameOverAppear {
@@ -297,8 +363,49 @@ body {
 
 #gameOver .game-over-content {
   text-align: center;
-  max-width: 600px;
-  padding: 40px;
+  max-width: 700px;
+  padding: 50px;
+  background: linear-gradient(
+      135deg,
+      rgba(26, 26, 46, 0.8),
+      rgba(22, 33, 62, 0.9)
+    ),
+    radial-gradient(circle at center, rgba(78, 205, 196, 0.05), transparent);
+  border: 2px solid rgba(78, 205, 196, 0.3);
+  border-radius: 30px;
+  box-shadow: 0 0 50px rgba(78, 205, 196, 0.2),
+    inset 0 0 30px rgba(78, 205, 196, 0.1), 0 20px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(15px);
+  position: relative;
+  overflow: hidden;
+}
+
+#gameOver .game-over-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 #gameOver h2 {
@@ -597,38 +704,58 @@ body::before {
 
 /* Combo Loss Animation */
 .combo-loss {
-  font-size: 2.5em;
+  font-size: 3.5em;
   font-weight: 900;
-  color: #ff4444;
-  text-shadow: 0 0 15px #ff4444, 0 0 25px #ff4444, 0 0 35px #ff4444,
-    2px 2px 0 #aa0000, 4px 4px 0 #880000;
+  color: #ff2222;
+  text-shadow: 0 0 20px #ff2222, 0 0 40px #ff2222, 0 0 60px #ff2222,
+    0 0 80px #ff2222, 3px 3px 0 #aa0000, 6px 6px 0 #880000, 9px 9px 0 #660000;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  animation: comboLoss 1s ease-out forwards;
+  letter-spacing: 4px;
+  animation: comboLoss 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   opacity: 1;
   transform: scale(1);
+  filter: drop-shadow(0 0 20px #ff2222);
 }
 
 @keyframes comboLoss {
   0% {
     opacity: 1;
+    transform: scale(0.3) rotate(-15deg);
+    filter: brightness(1.5) drop-shadow(0 0 30px #ff2222);
+  }
+  15% {
+    transform: scale(1.4) rotate(8deg);
+    filter: brightness(1.8) drop-shadow(0 0 40px #ff2222);
+  }
+  25% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  35% {
+    transform: scale(1.25) rotate(5deg);
+    filter: brightness(1.6) drop-shadow(0 0 35px #ff2222);
+  }
+  45% {
+    transform: scale(1) rotate(-2deg);
+  }
+  55% {
+    transform: scale(1.15) rotate(3deg);
+  }
+  65% {
+    transform: scale(1.05) rotate(-1deg);
+    filter: brightness(1.2) drop-shadow(0 0 25px #ff2222);
+  }
+  75% {
+    opacity: 0.9;
     transform: scale(1) rotate(0deg);
   }
-  20% {
-    transform: scale(1.1) rotate(-5deg);
-  }
-  40% {
-    transform: scale(0.9) rotate(5deg);
-  }
-  60% {
-    transform: scale(1.05) rotate(-2deg);
-  }
-  80% {
-    opacity: 0.7;
-    transform: scale(0.8) rotate(0deg);
+  85% {
+    opacity: 0.6;
+    transform: scale(0.9) rotate(0deg);
+    filter: brightness(0.8) drop-shadow(0 0 15px #ff2222);
   }
   100% {
     opacity: 0;
-    transform: scale(0.3) rotate(0deg);
+    transform: scale(0.2) rotate(0deg);
+    filter: brightness(0.5) drop-shadow(0 0 5px #ff2222);
   }
 }
