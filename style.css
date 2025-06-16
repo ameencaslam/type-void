@@ -702,60 +702,273 @@ body::before {
   }
 }
 
-/* Combo Loss Animation */
+/* Simple Combo Loss Text */
 .combo-loss {
-  font-size: 3.5em;
+  font-size: 2em;
   font-weight: 900;
-  color: #ff2222;
-  text-shadow: 0 0 20px #ff2222, 0 0 40px #ff2222, 0 0 60px #ff2222,
-    0 0 80px #ff2222, 3px 3px 0 #aa0000, 6px 6px 0 #880000, 9px 9px 0 #660000;
+  color: #ff6666;
+  text-shadow: 0 0 10px #ff6666;
   text-transform: uppercase;
-  letter-spacing: 4px;
-  animation: comboLoss 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  letter-spacing: 2px;
+  animation: simpleFadeOut 0.8s ease-out forwards;
   opacity: 1;
-  transform: scale(1);
-  filter: drop-shadow(0 0 20px #ff2222);
 }
 
-@keyframes comboLoss {
+@keyframes simpleFadeOut {
   0% {
     opacity: 1;
-    transform: scale(0.3) rotate(-15deg);
-    filter: brightness(1.5) drop-shadow(0 0 30px #ff2222);
-  }
-  15% {
-    transform: scale(1.4) rotate(8deg);
-    filter: brightness(1.8) drop-shadow(0 0 40px #ff2222);
-  }
-  25% {
-    transform: scale(1.1) rotate(-3deg);
-  }
-  35% {
-    transform: scale(1.25) rotate(5deg);
-    filter: brightness(1.6) drop-shadow(0 0 35px #ff2222);
-  }
-  45% {
-    transform: scale(1) rotate(-2deg);
-  }
-  55% {
-    transform: scale(1.15) rotate(3deg);
-  }
-  65% {
-    transform: scale(1.05) rotate(-1deg);
-    filter: brightness(1.2) drop-shadow(0 0 25px #ff2222);
-  }
-  75% {
-    opacity: 0.9;
-    transform: scale(1) rotate(0deg);
-  }
-  85% {
-    opacity: 0.6;
-    transform: scale(0.9) rotate(0deg);
-    filter: brightness(0.8) drop-shadow(0 0 15px #ff2222);
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(0.2) rotate(0deg);
-    filter: brightness(0.5) drop-shadow(0 0 5px #ff2222);
+    transform: scale(0.8);
+  }
+}
+
+/* DRAMATIC GLOBAL ERROR SYSTEM */
+
+/* Error Overlay - Covers entire screen */
+#errorOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+}
+
+/* Screen Shake Effect */
+.screen-shake {
+  animation: screenShake 0.8s ease-in-out !important;
+}
+
+@keyframes screenShake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  10% {
+    transform: translate(-10px, -5px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(10px, 5px) rotate(1deg);
+  }
+  30% {
+    transform: translate(-8px, 3px) rotate(-0.5deg);
+  }
+  40% {
+    transform: translate(8px, -3px) rotate(0.5deg);
+  }
+  50% {
+    transform: translate(-6px, 2px) rotate(-0.3deg);
+  }
+  60% {
+    transform: translate(6px, -4px) rotate(0.3deg);
+  }
+  70% {
+    transform: translate(-4px, 1px) rotate(-0.2deg);
+  }
+  80% {
+    transform: translate(4px, -1px) rotate(0.2deg);
+  }
+  90% {
+    transform: translate(-2px, 1px) rotate(-0.1deg);
+  }
+}
+
+/* Red Flash Effect */
+.red-flash {
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 0, 0.8) 0%,
+    rgba(255, 0, 0, 0.3) 50%,
+    transparent 100%
+  ) !important;
+  animation: redFlash 0.6s ease-out !important;
+}
+
+@keyframes redFlash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Intense Red Flash for Critical Errors */
+.critical-flash {
+  background: radial-gradient(
+      circle at 30% 40%,
+      rgba(255, 0, 0, 0.9) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 70% 60%,
+      rgba(255, 50, 50, 0.8) 0%,
+      transparent 60%
+    ),
+    linear-gradient(45deg, rgba(255, 0, 0, 0.4), rgba(200, 0, 0, 0.6)) !important;
+  animation: criticalFlash 1.2s ease-in-out !important;
+}
+
+@keyframes criticalFlash {
+  0% {
+    opacity: 0;
+    filter: brightness(1);
+  }
+  25% {
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+  50% {
+    opacity: 0.7;
+    filter: brightness(1.8);
+  }
+  75% {
+    opacity: 1;
+    filter: brightness(1.3);
+  }
+  100% {
+    opacity: 0;
+    filter: brightness(1);
+  }
+}
+
+/* Glitch Effect for Severe Errors */
+.glitch-effect {
+  animation: glitchShake 0.3s linear infinite !important;
+  filter: hue-rotate(90deg) contrast(1.5) brightness(1.2) saturate(2) !important;
+}
+
+@keyframes glitchShake {
+  0% {
+    transform: translate(0, 0) skew(0deg);
+    filter: hue-rotate(0deg) contrast(1.5) brightness(1.2);
+  }
+  20% {
+    transform: translate(-2px, 2px) skew(1deg);
+    filter: hue-rotate(90deg) contrast(2) brightness(1.5);
+  }
+  40% {
+    transform: translate(-1px, -1px) skew(-1deg);
+    filter: hue-rotate(180deg) contrast(1.8) brightness(1.3);
+  }
+  60% {
+    transform: translate(1px, 1px) skew(1deg);
+    filter: hue-rotate(270deg) contrast(1.6) brightness(1.4);
+  }
+  80% {
+    transform: translate(1px, -1px) skew(-1deg);
+    filter: hue-rotate(360deg) contrast(2.2) brightness(1.1);
+  }
+  100% {
+    transform: translate(0, 0) skew(0deg);
+    filter: hue-rotate(0deg) contrast(1.5) brightness(1.2);
+  }
+}
+
+/* Pulse Border Error Effect */
+.error-pulse-border {
+  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 0 6px rgba(255, 50, 50, 0.6),
+    0 0 0 9px rgba(255, 100, 100, 0.4), 0 0 30px rgba(255, 0, 0, 0.8) !important;
+  animation: errorPulseBorder 1s ease-in-out infinite !important;
+}
+
+@keyframes errorPulseBorder {
+  0% {
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 0 6px rgba(255, 50, 50, 0.6),
+      0 0 0 9px rgba(255, 100, 100, 0.4), 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 0, 0, 1), 0 0 0 12px rgba(255, 50, 50, 0.8),
+      0 0 0 18px rgba(255, 100, 100, 0.6), 0 0 50px rgba(255, 0, 0, 1);
+  }
+  100% {
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.8), 0 0 0 6px rgba(255, 50, 50, 0.6),
+      0 0 0 9px rgba(255, 100, 100, 0.4), 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+}
+
+/* Warning Strobe for Timer */
+.timer-warning-strobe {
+  animation: timerStrobe 0.2s linear infinite !important;
+}
+
+@keyframes timerStrobe {
+  0% {
+    background: linear-gradient(135deg, #ff0000, #cc0000) !important;
+    box-shadow: 0 0 40px rgba(255, 0, 0, 1) !important;
+    transform: scale(1);
+  }
+  50% {
+    background: linear-gradient(135deg, #ffff00, #ff8800) !important;
+    box-shadow: 0 0 60px rgba(255, 255, 0, 1) !important;
+    transform: scale(1.1);
+  }
+  100% {
+    background: linear-gradient(135deg, #ff0000, #cc0000) !important;
+    box-shadow: 0 0 40px rgba(255, 0, 0, 1) !important;
+    transform: scale(1);
+  }
+}
+
+/* Screen Corruption Effect */
+.screen-corruption {
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-corruption::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 0, 0, 0.1) 2px,
+      rgba(255, 0, 0, 0.1) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(255, 255, 0, 0.05) 1px,
+      rgba(255, 255, 0, 0.05) 2px
+    );
+  animation: screenCorruption 0.1s linear infinite;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@keyframes screenCorruption {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translate(-1px, 1px);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(1px, -1px);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translate(-1px, -1px);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(1px, 1px);
+    opacity: 0.85;
   }
 }
