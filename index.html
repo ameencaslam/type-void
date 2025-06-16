@@ -7,6 +7,32 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- Interstellar Landing Screen -->
+    <div id="landingScreen">
+      <!-- Animated Star Field -->
+      <div class="star-field" id="starField"></div>
+
+      <!-- Floating Particles -->
+      <div class="particle-system" id="particleSystem"></div>
+
+      <!-- Orbital Rings -->
+      <div class="orbital-ring"></div>
+      <div class="orbital-ring"></div>
+      <div class="orbital-ring"></div>
+
+      <!-- Nebula Effect -->
+      <div class="nebula-effect"></div>
+
+      <!-- Landing Content -->
+      <div class="landing-content">
+        <h1 class="landing-title">✨ Word Constellation ✨</h1>
+        <p class="landing-subtitle">Journey Through the Cosmos of Words</p>
+        <button class="start-button" onclick="startFromLanding()">
+          ENTER THE VOID
+        </button>
+      </div>
+    </div>
+
     <!-- Dramatic Error Overlay -->
     <div id="errorOverlay"></div>
 
@@ -86,7 +112,29 @@
             >
               🎉 NEW HIGH SCORE! 🎉
             </p>
-            <button onclick="startGame()">Play Again</button>
+            <div
+              style="
+                display: flex;
+                gap: 20px;
+                justify-content: center;
+                margin-top: 30px;
+              "
+            >
+              <button onclick="startGame()">Play Again</button>
+              <button
+                onclick="returnToLanding()"
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    #4ecdc4,
+                    #44a08d
+                  ) !important;
+                  border-color: #4ecdc4 !important;
+                "
+              >
+                Return to Menu
+              </button>
+            </div>
           </div>
         </div>
       </div>

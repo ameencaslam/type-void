@@ -972,3 +972,431 @@ body::before {
     opacity: 0.85;
   }
 }
+
+/* INTERSTELLAR LANDING SCREEN */
+
+#landingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+      ellipse at center,
+      rgba(20, 20, 60, 0.9) 0%,
+      rgba(0, 0, 20, 1) 70%
+    ),
+    radial-gradient(
+      ellipse at 20% 20%,
+      rgba(50, 100, 200, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 80%,
+      rgba(150, 50, 200, 0.2) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      45deg,
+      #000814 0%,
+      #001d3d 25%,
+      #003566 50%,
+      #001d3d 75%,
+      #000814 100%
+    );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  overflow: hidden;
+  animation: landingScreenAppear 2s ease-out forwards;
+}
+
+@keyframes landingScreenAppear {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animated Star Field */
+.star-field {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: #ffffff;
+  border-radius: 50%;
+  animation: twinkle 2s ease-in-out infinite alternate;
+}
+
+.star:nth-child(odd) {
+  animation-duration: 3s;
+  animation-delay: 0.5s;
+}
+
+.star:nth-child(even) {
+  animation-duration: 2.5s;
+  animation-delay: 1s;
+}
+
+.star.large {
+  width: 3px;
+  height: 3px;
+  box-shadow: 0 0 10px #ffffff, 0 0 20px #4ecdc4;
+}
+
+.star.medium {
+  width: 2px;
+  height: 2px;
+  box-shadow: 0 0 5px #ffffff, 0 0 10px #ff6b6b;
+}
+
+.star.small {
+  width: 1px;
+  height: 1px;
+  box-shadow: 0 0 3px #ffffff;
+}
+
+/* Floating Particles */
+.particle-system {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.floating-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(
+    circle,
+    rgba(78, 205, 196, 0.8) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: floatParticle 8s linear infinite;
+}
+
+.floating-particle:nth-child(odd) {
+  background: radial-gradient(
+    circle,
+    rgba(255, 107, 107, 0.6) 0%,
+    transparent 70%
+  );
+  animation-duration: 12s;
+  animation-delay: -2s;
+}
+
+.floating-particle:nth-child(3n) {
+  background: radial-gradient(
+    circle,
+    rgba(168, 85, 247, 0.7) 0%,
+    transparent 70%
+  );
+  animation-duration: 10s;
+  animation-delay: -4s;
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(90vh) translateX(10px) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(-10vh) translateX(-10px) scale(1);
+  }
+  100% {
+    transform: translateY(-20vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Landing Screen Content */
+.landing-content {
+  text-align: center;
+  z-index: 10;
+  max-width: 800px;
+  padding: 0 40px;
+  position: relative;
+}
+
+.landing-title {
+  font-size: 5em;
+  font-weight: 900;
+  background: linear-gradient(135deg, #4ecdc4, #44a08d, #4ecdc4);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
+  margin-bottom: 20px;
+  animation: titleGlow 3s ease-in-out infinite alternate,
+    titleShift 8s ease-in-out infinite;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
+    filter: brightness(1);
+  }
+  to {
+    text-shadow: 0 0 50px rgba(78, 205, 196, 0.8),
+      0 0 80px rgba(78, 205, 196, 0.4);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes titleShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.landing-subtitle {
+  font-size: 1.8em;
+  color: #ffffff;
+  margin-bottom: 40px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  animation: subtitleFadeIn 2s ease-out 1s forwards;
+  letter-spacing: 2px;
+}
+
+@keyframes subtitleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+/* Dramatic Start Button */
+.start-button {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52, #ff6b6b);
+  background-size: 200% 100%;
+  border: none;
+  color: #ffffff;
+  padding: 25px 60px;
+  font-size: 1.6em;
+  font-weight: 900;
+  border-radius: 50px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4),
+    inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 -3px 0 rgba(0, 0, 0, 0.3);
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: buttonFadeIn 2s ease-out 1.5s forwards,
+    buttonPulse 4s ease-in-out 3s infinite;
+  border: 3px solid transparent;
+}
+
+.start-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.start-button::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #4ecdc4, #ff6b6b, #a855f7, #4ecdc4);
+  background-size: 300% 300%;
+  border-radius: 50px;
+  z-index: -1;
+  animation: borderGlow 3s ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes borderGlow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+    opacity: 0.6;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+}
+
+@keyframes buttonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes buttonPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4),
+      inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 -3px 0 rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 25px 50px rgba(255, 107, 107, 0.6),
+      inset 0 3px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.4);
+  }
+}
+
+.start-button:hover {
+  transform: translateY(-8px) scale(1.08);
+  background-position: 100% 0;
+  box-shadow: 0 30px 60px rgba(255, 107, 107, 0.6),
+    inset 0 3px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.4);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.start-button:hover::before {
+  left: 100%;
+}
+
+.start-button:hover::after {
+  opacity: 1;
+}
+
+.start-button:active {
+  transform: translateY(-4px) scale(1.05);
+  transition: all 0.1s ease;
+}
+
+/* Orbital Rings */
+.orbital-ring {
+  position: absolute;
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  border-radius: 50%;
+  animation: rotate 20s linear infinite;
+}
+
+.orbital-ring:nth-child(1) {
+  width: 300px;
+  height: 300px;
+  top: 50%;
+  left: 50%;
+  margin: -150px 0 0 -150px;
+  animation-duration: 30s;
+}
+
+.orbital-ring:nth-child(2) {
+  width: 500px;
+  height: 500px;
+  top: 50%;
+  left: 50%;
+  margin: -250px 0 0 -250px;
+  animation-duration: 45s;
+  animation-direction: reverse;
+}
+
+.orbital-ring:nth-child(3) {
+  width: 700px;
+  height: 700px;
+  top: 50%;
+  left: 50%;
+  margin: -350px 0 0 -350px;
+  animation-duration: 60s;
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Nebula Effect */
+.nebula-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      ellipse at 10% 30%,
+      rgba(78, 205, 196, 0.1) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 90% 70%,
+      rgba(255, 107, 107, 0.08) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 50% 10%,
+      rgba(168, 85, 247, 0.06) 0%,
+      transparent 60%
+    );
+  animation: nebulaShift 15s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes nebulaShift {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1) rotate(2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.05) rotate(-1deg);
+    opacity: 0.8;
+  }
+}

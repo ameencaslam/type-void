@@ -588,10 +588,185 @@ class WordConstellation {
 // Initialize game when page loads
 let game;
 window.addEventListener("load", () => {
+  // Initialize landing screen effects
+  initializeLandingScreen();
+
+  // Create game instance but don't start yet
   game = new WordConstellation();
+
+  // Hide game container initially
+  document.getElementById("gameContainer").style.display = "none";
 });
+
+// Landing Screen Functions
+function initializeLandingScreen() {
+  generateStarField();
+  generateParticles();
+}
+
+function generateStarField() {
+  const starField = document.getElementById("starField");
+  const starCount = 150;
+
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+
+    // Random size class
+    const sizes = ["small", "medium", "large"];
+    const weights = [70, 25, 5]; // 70% small, 25% medium, 5% large
+    const randomNum = Math.random() * 100;
+    let sizeClass = "small";
+
+    if (randomNum > weights[0]) {
+      sizeClass = randomNum > weights[0] + weights[1] ? "large" : "medium";
+    }
+
+    star.classList.add(sizeClass);
+
+    // Random position
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+
+    // Random animation delay
+    star.style.animationDelay = Math.random() * 4 + "s";
+
+    starField.appendChild(star);
+  }
+}
+
+function generateParticles() {
+  const particleSystem = document.getElementById("particleSystem");
+  const particleCount = 30;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement("div");
+    particle.className = "floating-particle";
+
+    // Random horizontal position
+    particle.style.left = Math.random() * 100 + "%";
+
+    // Random animation delay
+    particle.style.animationDelay = Math.random() * 8 + "s";
+
+    particleSystem.appendChild(particle);
+  }
+}
+
+function startFromLanding() {
+  const landingScreen = document.getElementById("landingScreen");
+  const gameContainer = document.getElementById("gameContainer");
+
+  // Dramatic transition effect
+  landingScreen.style.animation = "landingScreenExit 1.5s ease-in forwards";
+
+  setTimeout(() => {
+    landingScreen.style.display = "none";
+    gameContainer.style.display = "block";
+    gameContainer.style.animation = "gameContainerEnter 1s ease-out forwards";
+
+    // Start the game
+    game.startGame();
+  }, 1500);
+}
+
+// Add exit animation to CSS dynamically
+const exitAnimation = `
+@keyframes landingScreenExit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+    filter: blur(5px);
+  }
+}
+
+@keyframes gameContainerEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+`;
+
+// Inject the animation CSS
+const style = document.createElement("style");
+style.textContent = exitAnimation;
+document.head.appendChild(style);
 
 // Expose startGame function globally for the play again button
 function startGame() {
   game.startGame();
 }
+
+// Return to landing screen
+function returnToLanding() {
+  const gameContainer = document.getElementById("gameContainer");
+  const landingScreen = document.getElementById("landingScreen");
+
+  // Clear any error effects
+  game.clearErrorEffects();
+
+  // Animate game container exit
+  gameContainer.style.animation = "gameContainerExit 1s ease-in forwards";
+
+  setTimeout(() => {
+    gameContainer.style.display = "none";
+    landingScreen.style.display = "flex";
+    landingScreen.style.animation =
+      "landingScreenReturn 1.5s ease-out forwards";
+
+    // Regenerate particles for fresh effect
+    document.getElementById("particleSystem").innerHTML = "";
+    generateParticles();
+  }, 1000);
+}
+
+// Add return animation CSS
+const returnAnimation = `
+@keyframes gameContainerExit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+    filter: blur(5px);
+  }
+}
+
+@keyframes landingScreenReturn {
+  from {
+    opacity: 0;
+    transform: scale(1.2);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+`;
+
+// Inject return animation CSS
+const returnStyle = document.createElement("style");
+returnStyle.textContent = returnAnimation;
+document.head.appendChild(returnStyle);
