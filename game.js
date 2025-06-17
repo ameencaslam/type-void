@@ -242,6 +242,11 @@ class WordConstellation {
   }
 
   handleKeyPress(e) {
+    // Ignore if modifier keys are pressed (Alt, Ctrl, Shift, etc.)
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+      return;
+    }
+
     const key = e.key.toLowerCase();
 
     if (key === "backspace") {
@@ -259,7 +264,8 @@ class WordConstellation {
       return;
     }
 
-    if (key.match(/[a-z]/)) {
+    // Only process actual letter keys (a-z)
+    if (key.match(/^[a-z]$/)) {
       if (!this.currentWord) return;
 
       // Start timer on first letter typed
@@ -597,7 +603,6 @@ class WordConstellation {
         overlay.classList.add("red-flash");
 
         setTimeout(() => {
-          overlay.style.display = "none";
           overlay.classList.remove("red-flash");
         }, 600);
 
@@ -614,8 +619,14 @@ class WordConstellation {
           .getElementById("currentWord")
           .classList.remove("error-pulse-border");
 
-        // Just screen shake for combo loss - no red overlay
+        // Screen shake + red flash for combo loss
         container.classList.add("screen-shake");
+        overlay.style.display = "block";
+        overlay.classList.add("red-flash");
+
+        setTimeout(() => {
+          overlay.classList.remove("red-flash");
+        }, 600);
 
         setTimeout(() => {
           container.classList.remove("screen-shake");
