@@ -7,7 +7,7 @@ class WordConstellation {
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
-    this.gameTime = 60;
+    this.gameTime = 15;
     this.timeLeft = this.gameTime;
     this.score = 0;
     this.combo = 0;
@@ -33,6 +33,13 @@ class WordConstellation {
 
     // Particles
     this.particles = [];
+
+    // Timer warning flags
+    this.timerWarningTriggered = {
+      warning: false,
+      critical: false,
+      extreme: false,
+    };
 
     this.setupEventListeners();
     this.showInstructions();
@@ -88,8 +95,16 @@ class WordConstellation {
     this.lastWordTime = Date.now();
     this.timerStarted = false;
 
+    // Reset timer warning flags
+    this.timerWarningTriggered = {
+      warning: false,
+      critical: false,
+      extreme: false,
+    };
+
     // Clear any error effects from previous game
     this.clearErrorEffects();
+    this.clearTimerEffects();
 
     // Show all game elements again
     document.getElementById("header").style.display = "block";
@@ -110,6 +125,9 @@ class WordConstellation {
   endGame() {
     this.isPlaying = false;
     this.maxCombo = Math.max(this.maxCombo, this.combo);
+
+    // Clear any dramatic timer effects immediately
+    this.clearTimerEffects();
 
     // Update high scores
     this.sessionBestScore = Math.max(this.sessionBestScore, this.score);
@@ -211,7 +229,7 @@ class WordConstellation {
         this.typedText = "";
         this.combo = 0;
 
-        // Trigger dramatic error for wrong letter
+        // Trigger dramatic error for wrong letter (only once per wrong letter)
         this.triggerDramaticError("wrong_letter");
 
         if (lostCombo >= 2) {
@@ -318,28 +336,27 @@ class WordConstellation {
     if (this.timerStarted) {
       const timeLeft = Math.ceil(this.timeLeft);
       if (timeLeft <= 5) {
-        // Critical timer warning - extreme effects
+        // Timer critical - glitch effects only
         timerElement.classList.add("warning");
-        if (!timerElement.classList.contains("timer-warning-strobe")) {
+        if (!this.timerWarningTriggered.critical) {
+          this.timerWarningTriggered.critical = true;
           this.triggerDramaticError("timer_critical");
-        }
-      } else if (timeLeft <= 10) {
-        // Regular timer warning
-        timerElement.classList.add("warning");
-        if (timeLeft === 10) {
-          this.triggerDramaticError("timer_warning");
         }
       } else {
         timerElement.classList.remove("warning");
         // Clear timer-specific effects when time is not critical
-        const container = document.getElementById("gameContainer");
-        const timer = document.getElementById("timer");
-        container.classList.remove("glitch-effect", "screen-corruption");
-        timer.classList.remove("timer-warning-strobe");
+        this.clearTimerEffects();
+        // Reset warning flags when timer is not in warning state
+        this.timerWarningTriggered = {
+          warning: false,
+          critical: false,
+          extreme: false,
+        };
       }
     } else {
       // Remove any warning states when timer hasn't started
       timerElement.classList.remove("warning");
+      this.clearTimerEffects();
     }
   }
 
@@ -495,11 +512,12 @@ class WordConstellation {
     const overlay = document.getElementById("errorOverlay");
     const timer = document.getElementById("timer");
 
-    // Clear any existing error classes
-    this.clearErrorEffects();
-
     switch (type) {
       case "wrong_letter":
+        // Clear only non-timer effects
+        container.classList.remove("screen-shake");
+        overlay.classList.remove("red-flash", "critical-flash");
+
         // Screen shake + red flash
         container.classList.add("screen-shake");
         overlay.style.display = "block";
@@ -516,6 +534,13 @@ class WordConstellation {
         break;
 
       case "combo":
+        // Clear only non-timer effects
+        container.classList.remove("screen-shake");
+        overlay.classList.remove("red-flash", "critical-flash");
+        document
+          .getElementById("currentWord")
+          .classList.remove("error-pulse-border");
+
         // Intense screen shake + critical flash + border pulse
         container.classList.add("screen-shake");
         overlay.style.display = "block";
@@ -538,33 +563,20 @@ class WordConstellation {
         break;
 
       case "timer_critical":
-        // Extreme effects: glitch + strobe + screen corruption
+        // Timer critical: glitch effects only, no red overlay
         container.classList.add("glitch-effect", "screen-corruption");
         timer.classList.add("timer-warning-strobe");
-        overlay.style.display = "block";
-        overlay.classList.add("critical-flash");
-
-        // Keep effects running until timer updates
-        setTimeout(() => {
-          overlay.style.display = "none";
-          overlay.classList.remove("critical-flash");
-        }, 1200);
-        break;
-
-      case "timer_warning":
-        // Moderate warning effects
-        container.classList.add("screen-shake");
-        timer.classList.add("timer-warning-strobe");
-        overlay.style.display = "block";
-        overlay.classList.add("red-flash");
-
-        setTimeout(() => {
-          overlay.style.display = "none";
-          overlay.classList.remove("red-flash");
-          container.classList.remove("screen-shake");
-        }, 600);
         break;
     }
+  }
+
+  clearTimerEffects() {
+    const container = document.getElementById("gameContainer");
+    const timer = document.getElementById("timer");
+
+    // Clear timer-specific effects only
+    container.classList.remove("glitch-effect", "screen-corruption");
+    timer.classList.remove("timer-warning-strobe");
   }
 
   clearErrorEffects() {
@@ -699,9 +711,72 @@ function startFromLanding() {
     gameContainer.style.display = "block";
     gameContainer.style.animation = "gameContainerEnter 1s ease-out forwards";
 
+    // Generate game screen effects
+    generateGameStarField();
+    generateGameParticles();
+
     // Start the game
     game.startGame();
   }, 1500);
+}
+
+function generateGameStarField() {
+  const gameStarField = document.getElementById("gameStarField");
+  if (!gameStarField) return;
+
+  // Clear existing stars
+  gameStarField.innerHTML = "";
+
+  const starCount = 80;
+
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+
+    // Random size class
+    const sizes = ["small", "medium", "large"];
+    const weights = [70, 25, 5]; // 70% small, 25% medium, 5% large
+    const randomNum = Math.random() * 100;
+    let sizeClass = "small";
+
+    if (randomNum > weights[0]) {
+      sizeClass = randomNum > weights[0] + weights[1] ? "large" : "medium";
+    }
+
+    star.classList.add(sizeClass);
+
+    // Random position
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+
+    // Random animation delay
+    star.style.animationDelay = Math.random() * 4 + "s";
+
+    gameStarField.appendChild(star);
+  }
+}
+
+function generateGameParticles() {
+  const gameParticleSystem = document.getElementById("gameParticleSystem");
+  if (!gameParticleSystem) return;
+
+  // Clear existing particles
+  gameParticleSystem.innerHTML = "";
+
+  const particleCount = 15;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement("div");
+    particle.className = "game-floating-particle";
+
+    // Random horizontal position
+    particle.style.left = Math.random() * 100 + "%";
+
+    // Random animation delay
+    particle.style.animationDelay = Math.random() * 12 + "s";
+
+    gameParticleSystem.appendChild(particle);
+  }
 }
 
 // Add exit animation to CSS dynamically
