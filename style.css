@@ -1706,20 +1706,23 @@ body::before {
 }
 
 .landing-title {
-  font-size: 7em;
-  font-weight: 800;
-  font-family: "Impact", "Arial Black", "Helvetica Bold", sans-serif;
-  background: linear-gradient(135deg, #409fff, #ffffff, #409fff);
-  background-size: 200% 100%;
+  font-size: 8.5em;
+  font-weight: 900;
+  font-family: "Orbitron", "Exo 2", "Rajdhani", "Space Mono", "Courier New",
+    monospace;
+  background: linear-gradient(135deg, #409fff, #ffffff, #64b5f6, #409fff);
+  background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 40px rgba(64, 159, 255, 0.6);
-  margin-bottom: 25px;
+  text-shadow: 0 0 50px rgba(64, 159, 255, 0.8),
+    0 0 100px rgba(64, 159, 255, 0.4);
+  margin-bottom: 30px;
   animation: titleGlow 3s ease-in-out infinite alternate,
     titleShift 8s ease-in-out infinite;
-  letter-spacing: 8px;
+  letter-spacing: 12px;
   text-transform: uppercase;
+  filter: drop-shadow(0 0 20px rgba(64, 159, 255, 0.6));
 }
 
 @keyframes titleGlow {
@@ -1745,22 +1748,30 @@ body::before {
 }
 
 .landing-subtitle {
-  font-size: 1.2em;
-  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 1.4em;
+  font-family: "Space Mono", "Orbitron", "Courier New", monospace;
   color: #8892b0;
   margin-bottom: 40px;
   text-shadow: 0 0 15px rgba(64, 159, 255, 0.3);
   opacity: 0;
   animation: subtitleFadeIn 2s ease-out 1s forwards;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   font-weight: 400;
   text-transform: lowercase;
   border-left: 3px solid rgba(64, 159, 255, 0.6);
-  padding-left: 15px;
-  background: linear-gradient(90deg, rgba(64, 159, 255, 0.1), transparent);
-  padding: 8px 15px;
-  border-radius: 0 8px 8px 0;
+  border-right: 3px solid rgba(64, 159, 255, 0.6);
+  padding: 8px 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(64, 159, 255, 0.1),
+    rgba(64, 159, 255, 0.05),
+    rgba(64, 159, 255, 0.1)
+  );
+  border-radius: 8px;
   backdrop-filter: blur(5px);
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @keyframes subtitleFadeIn {
@@ -1783,10 +1794,11 @@ body::before {
   padding: 16px 36px;
   font-size: 1.2em;
   font-weight: 700;
+  font-family: "Rajdhani", "Exo 2", "Orbitron", sans-serif;
   border-radius: 8px;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   transition: all 0.3s ease;
   box-shadow: 0 6px 20px rgba(10, 10, 10, 0.7), 0 0 15px rgba(64, 159, 255, 0.3);
   text-shadow: 0 0 8px rgba(64, 159, 255, 0.8);
