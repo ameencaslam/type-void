@@ -163,6 +163,7 @@ class WordConstellation {
     document.getElementById("scoreContainer").style.display = "block";
     document.getElementById("highScoreContainer").style.display = "block";
     document.getElementById("timeSelection").style.display = "flex";
+    document.getElementById("timeSelection").classList.remove("disabled");
     document.getElementById("gameOver").style.display = "none";
     document.getElementById("gameOver").classList.add("hidden");
     document.getElementById("instructions").classList.add("hidden");
@@ -298,6 +299,9 @@ class WordConstellation {
         this.timerStarted = true;
         this.gameStartTime = Date.now(); // Reset start time to when typing actually begins
         this.lastTime = performance.now(); // Initialize lastTime for gameLoop
+
+        // Disable time selection once game starts
+        document.getElementById("timeSelection").classList.add("disabled");
       }
 
       this.typedText += key;

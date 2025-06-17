@@ -2283,3 +2283,9 @@ body::before {
     height: 22px;
   }
 }
+
+.time-selection.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
