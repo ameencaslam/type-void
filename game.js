@@ -94,6 +94,7 @@ class WordConstellation {
     this.gameStartTime = Date.now();
     this.lastWordTime = Date.now();
     this.timerStarted = false;
+    this.lastTime = performance.now(); // Initialize lastTime
 
     // Reset timer warning flags
     this.timerWarningTriggered = {
@@ -218,6 +219,7 @@ class WordConstellation {
       if (!this.timerStarted) {
         this.timerStarted = true;
         this.gameStartTime = Date.now(); // Reset start time to when typing actually begins
+        this.lastTime = performance.now(); // Initialize lastTime for gameLoop
       }
 
       this.typedText += key;
@@ -323,8 +325,6 @@ class WordConstellation {
 
   updateUI() {
     document.getElementById("score").textContent = `Score: ${this.score}`;
-    document.getElementById("combo").textContent = `Combo: ${this.combo}x`;
-    document.getElementById("wpm").textContent = `WPM: ${this.wpm}`;
 
     // Update persistent combo counter
     this.updatePersistentCombo(this.combo);
