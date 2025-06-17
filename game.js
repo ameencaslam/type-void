@@ -4,6 +4,10 @@ class WordConstellation {
     this.ctx = this.canvas.getContext("2d");
     this.resizeCanvas();
 
+    // Audio elements
+    this.bgm = document.getElementById("bgm");
+    this.bgm.volume = 0.3; // Set initial volume to 30%
+
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
@@ -51,6 +55,18 @@ class WordConstellation {
     if (wordContainer) {
       wordContainer.style.display = "none";
     }
+
+    // Sound toggle logic
+    this.soundToggle = document.getElementById("soundToggle");
+    this.soundOnIcon = this.soundToggle.querySelector(".sound-on");
+    this.soundOffIcon = this.soundToggle.querySelector(".sound-off");
+
+    // Always mute on page load
+    this.setMuted(true);
+
+    this.soundToggle.addEventListener("click", () => {
+      this.setMuted(!this.bgm.muted);
+    });
   }
 
   resizeCanvas() {
@@ -122,6 +138,11 @@ class WordConstellation {
     this.timerStarted = false;
     this.lastTime = performance.now();
 
+    // Start background music
+    this.bgm.play().catch((error) => {
+      console.log("Audio playback failed:", error);
+    });
+
     // Reset timer warning flags
     this.timerWarningTriggered = {
       warning: false,
@@ -155,6 +176,10 @@ class WordConstellation {
   endGame() {
     this.isPlaying = false;
     this.maxCombo = Math.max(this.maxCombo, this.combo);
+
+    // Stop background music
+    this.bgm.pause();
+    this.bgm.currentTime = 0;
 
     // Clear any dramatic timer effects immediately
     this.clearTimerEffects();
@@ -695,6 +720,19 @@ class WordConstellation {
       }
     }, 5000);
   }
+
+  setMuted(muted) {
+    this.bgm.muted = muted;
+    if (muted) {
+      this.soundOnIcon.style.display = "none";
+      this.soundOffIcon.style.display = "inline";
+    } else {
+      this.soundOnIcon.style.display = "inline";
+      this.soundOffIcon.style.display = "none";
+    }
+    // Optionally, persist state
+    localStorage.setItem("soundMuted", muted ? "1" : "0");
+  }
 }
 
 // Initialize game when page loads
@@ -709,6 +747,30 @@ window.addEventListener("load", () => {
   // Hide game container initially
   document.getElementById("gameContainer").style.display = "none";
 });
+
+// Initialize and start background music
+const bgm = document.getElementById("bgm");
+bgm.volume = 0.3; // Set initial volume to 30%
+
+// Try to start the music when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+  bgm.play().catch((error) => {
+    console.log("Audio playback failed:", error);
+  });
+});
+
+// Also try to start on first user interaction
+document.addEventListener(
+  "click",
+  () => {
+    if (bgm.paused) {
+      bgm.play().catch((error) => {
+        console.log("Audio playback failed:", error);
+      });
+    }
+  },
+  { once: true }
+);
 
 // Landing Screen Functions
 function initializeLandingScreen() {
@@ -768,6 +830,12 @@ function generateParticles() {
 function startFromLanding() {
   const landingScreen = document.getElementById("landingScreen");
   const gameContainer = document.getElementById("gameContainer");
+
+  // Hide the sound toggle once we leave the landing page
+  const soundToggleButton = document.getElementById("soundToggle");
+  if (soundToggleButton) {
+    soundToggleButton.style.display = "none";
+  }
 
   // Clear any error effects before transitioning
   if (game) {
@@ -909,6 +977,13 @@ function returnToLanding() {
   setTimeout(() => {
     gameContainer.style.display = "none";
     landingScreen.style.display = "flex";
+
+    // Show the sound toggle again on the landing page
+    const soundToggleButton = document.getElementById("soundToggle");
+    if (soundToggleButton) {
+      soundToggleButton.style.display = "flex";
+    }
+
     landingScreen.style.animation =
       "landingScreenReturn 0.8s ease-out forwards";
 
