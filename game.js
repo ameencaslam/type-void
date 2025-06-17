@@ -7,7 +7,7 @@ class WordConstellation {
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
-    this.gameTime = 10;
+    this.gameTime = 60;
     this.timeLeft = this.gameTime;
     this.score = 0;
     this.combo = 0;
