@@ -7,7 +7,7 @@ class WordConstellation {
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
-    this.gameTime = 60;
+    this.gameTime = 60; // Default time
     this.timeLeft = this.gameTime;
     this.score = 0;
     this.combo = 0;
@@ -16,8 +16,8 @@ class WordConstellation {
     this.wpm = 0;
     this.timerStarted = false;
 
-    // High score system
-    this.highScore = this.loadHighScore();
+    // High score system - now time-specific
+    this.highScores = this.loadHighScores();
     this.sessionBestScore = 0;
 
     // Word management
@@ -44,6 +44,7 @@ class WordConstellation {
     this.setupEventListeners();
     this.showInstructions();
     this.updateHighScoreDisplay();
+    this.setupTimeSelection();
 
     // Hide word container initially
     const wordContainer = document.getElementById("wordContainer");
@@ -78,6 +79,31 @@ class WordConstellation {
     });
   }
 
+  setupTimeSelection() {
+    const timeOptions = document.querySelectorAll(".time-option");
+    timeOptions.forEach((option) => {
+      option.addEventListener("click", () => {
+        // Remove active class from all options
+        timeOptions.forEach((opt) => opt.classList.remove("active"));
+        // Add active class to clicked option
+        option.classList.add("active");
+        // Update game time
+        this.gameTime = parseInt(option.dataset.time);
+        this.timeLeft = this.gameTime;
+        // Update timer display if not playing
+        if (!this.isPlaying) {
+          document.getElementById(
+            "timer"
+          ).textContent = `Time: ${this.gameTime}s`;
+        }
+        // Update high score display for the selected time
+        this.updateHighScoreDisplay();
+      });
+    });
+    // Set default active option (60s)
+    timeOptions[2].classList.add("active");
+  }
+
   startGame() {
     this.isPlaying = true;
     this.isPaused = false;
@@ -94,7 +120,7 @@ class WordConstellation {
     this.gameStartTime = Date.now();
     this.lastWordTime = Date.now();
     this.timerStarted = false;
-    this.lastTime = performance.now(); // Initialize lastTime
+    this.lastTime = performance.now();
 
     // Reset timer warning flags
     this.timerWarningTriggered = {
@@ -113,6 +139,9 @@ class WordConstellation {
     document.getElementById("currentWord").style.display = "block";
     document.getElementById("instructions").style.display = "block";
     document.getElementById("timerContainer").style.display = "block";
+    document.getElementById("scoreContainer").style.display = "block";
+    document.getElementById("highScoreContainer").style.display = "block";
+    document.getElementById("timeSelection").style.display = "flex";
     document.getElementById("gameOver").style.display = "none";
     document.getElementById("gameOver").classList.add("hidden");
     document.getElementById("instructions").classList.add("hidden");
@@ -134,16 +163,18 @@ class WordConstellation {
     this.sessionBestScore = Math.max(this.sessionBestScore, this.score);
 
     let isNewHighScore = false;
-    if (this.score > this.highScore) {
-      this.highScore = this.score;
-      this.saveHighScore(this.highScore);
+    const currentTime = this.gameTime.toString();
+    if (this.score > (this.highScores[currentTime] || 0)) {
+      this.highScores[currentTime] = this.score;
+      this.saveHighScores(this.highScores);
       isNewHighScore = true;
     }
 
     document.getElementById("finalScore").textContent = this.score;
     document.getElementById("wordsCompleted").textContent = this.wordsCompleted;
     document.getElementById("bestCombo").textContent = this.maxCombo;
-    document.getElementById("gameOverHighScore").textContent = this.highScore;
+    document.getElementById("gameOverHighScore").textContent =
+      this.highScores[currentTime];
 
     // Show/hide new high score message
     const newHighScoreMsg = document.getElementById("newHighScore");
@@ -158,18 +189,32 @@ class WordConstellation {
     generateGameOverStarField();
     generateGameOverParticles();
 
-    // Hide ALL game elements and show full-screen game over
-    document.getElementById("header").style.display = "none";
-    document.getElementById("gameCanvas").style.display = "none";
-    document.getElementById("currentWord").style.display = "none";
-    document.getElementById("instructions").style.display = "none";
-    document.getElementById("timerContainer").style.display = "none";
-    document.getElementById("scoreContainer").style.display = "none";
-    document.getElementById("highScoreContainer").style.display = "none";
-    document.getElementById("gameOver").style.display = "flex";
-    document.getElementById("gameOver").classList.remove("hidden");
+    // Trigger blackout sequence
+    const blackoutOverlay = document.getElementById("blackoutOverlay");
 
-    this.updateHighScoreDisplay();
+    // First fade in to black
+    blackoutOverlay.classList.add("fade-in");
+
+    // After fade in, wait a moment, then show game over and fade out
+    setTimeout(() => {
+      // Hide ALL game elements and show full-screen game over
+      document.getElementById("header").style.display = "none";
+      document.getElementById("gameCanvas").style.display = "none";
+      document.getElementById("currentWord").style.display = "none";
+      document.getElementById("instructions").style.display = "none";
+      document.getElementById("timerContainer").style.display = "none";
+      document.getElementById("scoreContainer").style.display = "none";
+      document.getElementById("highScoreContainer").style.display = "none";
+      document.getElementById("timeSelection").style.display = "none";
+      document.getElementById("gameOver").style.display = "flex";
+      document.getElementById("gameOver").classList.remove("hidden");
+
+      // Fade out the black overlay
+      blackoutOverlay.classList.remove("fade-in");
+      blackoutOverlay.classList.add("fade-out");
+
+      this.updateHighScoreDisplay();
+    }, 1000); // Wait 1 second in black before showing game over
   }
 
   nextWord() {
@@ -433,25 +478,36 @@ class WordConstellation {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  // High Score System
-  loadHighScore() {
+  // High Score System - Updated for time-specific scores
+  loadHighScores() {
     const saved = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("wordConstellationHighScore="));
-    return saved ? parseInt(saved.split("=")[1]) : 0;
+      .find((row) => row.startsWith("wordConstellationHighScores="));
+    return saved
+      ? JSON.parse(decodeURIComponent(saved.split("=")[1]))
+      : {
+          15: 0,
+          30: 0,
+          60: 0,
+          120: 0,
+        };
   }
 
-  saveHighScore(score) {
+  saveHighScores(scores) {
     // Save for 1 year
     const expires = new Date();
     expires.setFullYear(expires.getFullYear() + 1);
-    document.cookie = `wordConstellationHighScore=${score}; expires=${expires.toUTCString()}; path=/`;
+    document.cookie = `wordConstellationHighScores=${encodeURIComponent(
+      JSON.stringify(scores)
+    )}; expires=${expires.toUTCString()}; path=/`;
   }
 
   updateHighScoreDisplay() {
     const highScoreElement = document.getElementById("highScore");
     if (highScoreElement) {
-      highScoreElement.textContent = `High Score: ${this.highScore}`;
+      const currentTime = this.gameTime.toString();
+      const highScore = this.highScores[currentTime] || 0;
+      highScoreElement.textContent = `High Score: ${highScore}`;
     }
   }
 

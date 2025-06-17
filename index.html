@@ -65,10 +65,21 @@
     <!-- Dramatic Error Overlay -->
     <div id="errorOverlay"></div>
 
+    <!-- Blackout Overlay -->
+    <div id="blackoutOverlay" class="blackout-overlay"></div>
+
     <div id="gameContainer">
       <!-- Add starry effects to game screen -->
       <div class="game-star-field" id="gameStarField"></div>
       <div class="game-particle-system" id="gameParticleSystem"></div>
+
+      <!-- Time Selection Menu -->
+      <div id="timeSelection" class="time-selection">
+        <div class="time-option" data-time="15">15s</div>
+        <div class="time-option" data-time="30">30s</div>
+        <div class="time-option" data-time="60">60s</div>
+        <div class="time-option" data-time="120">2m</div>
+      </div>
 
       <!-- Game Stats Positioned -->
       <div id="timerContainer">

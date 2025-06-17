@@ -2156,3 +2156,83 @@ body::before {
     opacity: 0.8;
   }
 }
+
+.blackout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.blackout-overlay.fade-in {
+  animation: blackoutFadeIn 0.5s ease-in forwards;
+}
+
+.blackout-overlay.fade-out {
+  animation: blackoutFadeOut 0.5s ease-in forwards;
+}
+
+@keyframes blackoutFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes blackoutFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.time-selection {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(64, 159, 255, 0.3);
+  backdrop-filter: blur(5px);
+}
+
+.time-option {
+  background: linear-gradient(135deg, #1a1a2e, #0f0f23);
+  color: #409fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 10px rgba(64, 159, 255, 0.3);
+}
+
+.time-option:hover {
+  background: linear-gradient(135deg, #1e40af, #1a1a2e);
+  border-color: rgba(64, 159, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(64, 159, 255, 0.2);
+}
+
+.time-option.active {
+  background: linear-gradient(135deg, #409fff, #1e40af);
+  border-color: rgba(64, 159, 255, 0.8);
+  box-shadow: 0 0 20px rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 15px rgba(64, 159, 255, 0.5);
+  color: #ffffff;
+}
