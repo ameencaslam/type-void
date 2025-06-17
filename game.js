@@ -7,7 +7,7 @@ class WordConstellation {
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
-    this.gameTime = 60;
+    this.gameTime = 10;
     this.timeLeft = this.gameTime;
     this.score = 0;
     this.combo = 0;
@@ -711,7 +711,12 @@ function startFromLanding() {
   setTimeout(() => {
     landingScreen.style.display = "none";
     gameContainer.style.display = "block";
-    gameContainer.style.animation = "gameContainerEnter 0.6s ease-out forwards";
+
+    // Use requestAnimationFrame to ensure display change is processed before animation
+    requestAnimationFrame(() => {
+      gameContainer.style.animation =
+        "gameContainerEnter 0.6s ease-out forwards";
+    });
 
     // Generate game screen effects
     generateGameStarField();
@@ -719,7 +724,7 @@ function startFromLanding() {
 
     // Start the game
     game.startGame();
-  }, 1500);
+  }, 1000);
 }
 
 function generateGameStarField() {
