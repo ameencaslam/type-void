@@ -716,6 +716,11 @@ function startFromLanding() {
     requestAnimationFrame(() => {
       gameContainer.style.animation =
         "gameContainerEnter 0.6s ease-out forwards";
+
+      // Remove the animation style after it completes
+      setTimeout(() => {
+        gameContainer.style.animation = "";
+      }, 600); // Match the animation duration
     });
 
     // Generate game screen effects
