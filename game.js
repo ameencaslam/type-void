@@ -14,6 +14,7 @@ class WordConstellation {
     this.maxCombo = 0;
     this.wordsCompleted = 0;
     this.wpm = 0;
+    this.timerStarted = false;
 
     // High score system
     this.highScore = this.loadHighScore();
@@ -85,6 +86,7 @@ class WordConstellation {
     this.wordsInRound = 0;
     this.gameStartTime = Date.now();
     this.lastWordTime = Date.now();
+    this.timerStarted = false;
 
     // Clear any error effects from previous game
     this.clearErrorEffects();
@@ -189,6 +191,12 @@ class WordConstellation {
 
     if (key.match(/[a-z]/)) {
       if (!this.currentWord) return;
+
+      // Start timer on first letter typed
+      if (!this.timerStarted) {
+        this.timerStarted = true;
+        this.gameStartTime = Date.now(); // Reset start time to when typing actually begins
+      }
 
       this.typedText += key;
 
@@ -299,29 +307,39 @@ class WordConstellation {
     document.getElementById("wpm").textContent = `WPM: ${this.wpm}`;
 
     const timerElement = document.getElementById("timer");
-    const timeLeft = Math.ceil(this.timeLeft);
-    timerElement.textContent = `Time: ${timeLeft}s`;
+    if (!this.timerStarted) {
+      timerElement.textContent = "READY";
+    } else {
+      const timeLeft = Math.ceil(this.timeLeft);
+      timerElement.textContent = `Time: ${timeLeft}s`;
+    }
 
-    // Add warning class and dramatic effects when time is low
-    if (timeLeft <= 5) {
-      // Critical timer warning - extreme effects
-      timerElement.classList.add("warning");
-      if (!timerElement.classList.contains("timer-warning-strobe")) {
-        this.triggerDramaticError("timer_critical");
-      }
-    } else if (timeLeft <= 10) {
-      // Regular timer warning
-      timerElement.classList.add("warning");
-      if (timeLeft === 10) {
-        this.triggerDramaticError("timer_warning");
+    // Add warning class and dramatic effects when time is low (only if timer started)
+    if (this.timerStarted) {
+      const timeLeft = Math.ceil(this.timeLeft);
+      if (timeLeft <= 5) {
+        // Critical timer warning - extreme effects
+        timerElement.classList.add("warning");
+        if (!timerElement.classList.contains("timer-warning-strobe")) {
+          this.triggerDramaticError("timer_critical");
+        }
+      } else if (timeLeft <= 10) {
+        // Regular timer warning
+        timerElement.classList.add("warning");
+        if (timeLeft === 10) {
+          this.triggerDramaticError("timer_warning");
+        }
+      } else {
+        timerElement.classList.remove("warning");
+        // Clear timer-specific effects when time is not critical
+        const container = document.getElementById("gameContainer");
+        const timer = document.getElementById("timer");
+        container.classList.remove("glitch-effect", "screen-corruption");
+        timer.classList.remove("timer-warning-strobe");
       }
     } else {
+      // Remove any warning states when timer hasn't started
       timerElement.classList.remove("warning");
-      // Clear timer-specific effects when time is not critical
-      const container = document.getElementById("gameContainer");
-      const timer = document.getElementById("timer");
-      container.classList.remove("glitch-effect", "screen-corruption");
-      timer.classList.remove("timer-warning-strobe");
     }
   }
 
@@ -335,15 +353,21 @@ class WordConstellation {
     const deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
 
-    // Update timer
-    this.timeLeft -= deltaTime / 1000;
-    if (this.timeLeft <= 0) {
-      this.endGame();
-      return;
+    // Update timer only if it has started (user has started typing)
+    if (this.timerStarted) {
+      this.timeLeft -= deltaTime / 1000;
+      if (this.timeLeft <= 0) {
+        this.endGame();
+        return;
+      }
     }
 
-    // Lose combo if no word typed for too long
-    if (Date.now() - this.lastWordTime > 5000 && this.combo > 0) {
+    // Lose combo if no word typed for too long (only after timer started)
+    if (
+      this.timerStarted &&
+      Date.now() - this.lastWordTime > 5000 &&
+      this.combo > 0
+    ) {
       const lostCombo = this.combo;
       this.combo = 0;
       if (lostCombo >= 2) {
@@ -556,9 +580,14 @@ class WordConstellation {
       "screen-corruption"
     );
     overlay.classList.remove("red-flash", "critical-flash");
-    timer.classList.remove("timer-warning-strobe");
+    timer.classList.remove("timer-warning-strobe", "warning");
     currentWord.classList.remove("error-pulse-border");
     overlay.style.display = "none";
+
+    // Clear any residual animation styles that might interfere with transitions
+    container.style.animation = "";
+    container.style.transform = "";
+    container.style.filter = "";
   }
 
   showNewHighScore() {
@@ -656,6 +685,11 @@ function generateParticles() {
 function startFromLanding() {
   const landingScreen = document.getElementById("landingScreen");
   const gameContainer = document.getElementById("gameContainer");
+
+  // Clear any error effects before transitioning
+  if (game) {
+    game.clearErrorEffects();
+  }
 
   // Dramatic transition effect
   landingScreen.style.animation = "landingScreenExit 1.5s ease-in forwards";

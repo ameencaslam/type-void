@@ -1202,7 +1202,7 @@ body::before {
 
 /* Dramatic Start Button */
 .start-button {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52, #ff6b6b);
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
   background-size: 200% 100%;
   border: none;
   color: #ffffff;
@@ -1213,16 +1213,17 @@ body::before {
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 3px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4),
-    inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 -3px 0 rgba(0, 0, 0, 0.3);
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(10, 10, 10, 0.8),
+    0 0 20px rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 10px rgba(64, 159, 255, 0.8);
   position: relative;
   overflow: hidden;
   opacity: 0;
-  animation: buttonFadeIn 2s ease-out 1.5s forwards,
-    buttonPulse 4s ease-in-out 3s infinite;
-  border: 3px solid transparent;
+  animation: buttonFadeIn 1.5s ease-out 1s forwards,
+    buttonGlow 3s ease-in-out 2.5s infinite;
+  border: 2px solid rgba(64, 159, 255, 0.4);
+  will-change: transform, box-shadow;
 }
 
 .start-button::before {
@@ -1235,10 +1236,10 @@ body::before {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(64, 159, 255, 0.4),
     transparent
   );
-  transition: left 0.6s ease;
+  transition: left 0.4s ease;
 }
 
 .start-button::after {
@@ -1248,23 +1249,23 @@ body::before {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #4ecdc4, #ff6b6b, #a855f7, #4ecdc4);
-  background-size: 300% 300%;
+  background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #409fff, #0a0a0a);
+  background-size: 200% 200%;
   border-radius: 50px;
   z-index: -1;
-  animation: borderGlow 3s ease-in-out infinite;
+  animation: voidBorder 4s ease-in-out infinite;
   opacity: 0;
 }
 
-@keyframes borderGlow {
+@keyframes voidBorder {
   0%,
   100% {
     background-position: 0% 50%;
-    opacity: 0.6;
+    opacity: 0.4;
   }
   50% {
     background-position: 100% 50%;
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 
@@ -1279,26 +1280,27 @@ body::before {
   }
 }
 
-@keyframes buttonPulse {
+@keyframes buttonGlow {
   0%,
   100% {
-    transform: scale(1);
-    box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4),
-      inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 -3px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(10, 10, 10, 0.8),
+      0 0 20px rgba(64, 159, 255, 0.3);
+    text-shadow: 0 0 10px rgba(64, 159, 255, 0.8);
   }
   50% {
-    transform: scale(1.05);
-    box-shadow: 0 25px 50px rgba(255, 107, 107, 0.6),
-      inset 0 3px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 15px 35px rgba(10, 10, 10, 0.9),
+      0 0 30px rgba(64, 159, 255, 0.6);
+    text-shadow: 0 0 20px rgba(64, 159, 255, 1);
   }
 }
 
 .start-button:hover {
-  transform: translateY(-8px) scale(1.08);
+  transform: translateY(-5px) scale(1.05);
   background-position: 100% 0;
-  box-shadow: 0 30px 60px rgba(255, 107, 107, 0.6),
-    inset 0 3px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 0 rgba(0, 0, 0, 0.4);
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 40px rgba(10, 10, 10, 0.9),
+    0 0 40px rgba(64, 159, 255, 0.7);
+  text-shadow: 0 0 25px rgba(64, 159, 255, 1), 0 0 15px rgba(255, 255, 255, 0.5);
+  border-color: rgba(64, 159, 255, 0.8);
 }
 
 .start-button:hover::before {
@@ -1310,14 +1312,16 @@ body::before {
 }
 
 .start-button:active {
-  transform: translateY(-4px) scale(1.05);
+  transform: translateY(-2px) scale(1.02);
   transition: all 0.1s ease;
+  box-shadow: 0 10px 20px rgba(10, 10, 10, 0.9),
+    0 0 20px rgba(64, 159, 255, 0.8);
 }
 
 /* Orbital Rings */
 .orbital-ring {
   position: absolute;
-  border: 1px solid rgba(78, 205, 196, 0.3);
+  border: 1px solid rgba(64, 159, 255, 0.15);
   border-radius: 50%;
   animation: rotate 20s linear infinite;
 }
@@ -1348,7 +1352,7 @@ body::before {
   left: 50%;
   margin: -350px 0 0 -350px;
   animation-duration: 60s;
-  border-color: rgba(255, 107, 107, 0.2);
+  border-color: rgba(26, 26, 46, 0.2);
 }
 
 @keyframes rotate {
@@ -1360,7 +1364,7 @@ body::before {
   }
 }
 
-/* Nebula Effect */
+/* Void Nebula Effect */
 .nebula-effect {
   position: absolute;
   top: 0;
@@ -1368,21 +1372,21 @@ body::before {
   width: 100%;
   height: 100%;
   background: radial-gradient(
-      ellipse at 10% 30%,
-      rgba(78, 205, 196, 0.1) 0%,
-      transparent 60%
+      ellipse at 20% 30%,
+      rgba(64, 159, 255, 0.06) 0%,
+      transparent 75%
     ),
     radial-gradient(
-      ellipse at 90% 70%,
-      rgba(255, 107, 107, 0.08) 0%,
-      transparent 60%
+      ellipse at 80% 70%,
+      rgba(26, 26, 46, 0.08) 0%,
+      transparent 70%
     ),
     radial-gradient(
-      ellipse at 50% 10%,
-      rgba(168, 85, 247, 0.06) 0%,
-      transparent 60%
+      ellipse at 45% 15%,
+      rgba(15, 15, 35, 0.05) 0%,
+      transparent 80%
     );
-  animation: nebulaShift 15s ease-in-out infinite alternate;
+  animation: nebulaShift 20s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
