@@ -164,6 +164,8 @@ class WordConstellation {
     document.getElementById("currentWord").style.display = "none";
     document.getElementById("instructions").style.display = "none";
     document.getElementById("timerContainer").style.display = "none";
+    document.getElementById("scoreContainer").style.display = "none";
+    document.getElementById("highScoreContainer").style.display = "none";
     document.getElementById("gameOver").style.display = "flex";
     document.getElementById("gameOver").classList.remove("hidden");
 
