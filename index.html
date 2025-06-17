@@ -84,58 +84,53 @@
         </div>
 
         <div id="gameOver" class="hidden">
+          <!-- Add starry effects to game over screen -->
+          <div class="game-over-star-field" id="gameOverStarField"></div>
+          <div
+            class="game-over-particle-system"
+            id="gameOverParticleSystem"
+          ></div>
+
           <div class="game-over-content">
-            <h2>Game Over!</h2>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <div class="stat-label">Final Score</div>
-                <div class="stat-value" id="finalScore">0</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Words Typed</div>
-                <div class="stat-value" id="wordsCompleted">0</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Best Combo</div>
-                <div class="stat-value" id="bestCombo">0</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">High Score</div>
-                <div class="stat-value" id="gameOverHighScore">0</div>
-              </div>
-            </div>
+            <h2>⚡ Void Complete ⚡</h2>
+
             <p
               id="newHighScore"
-              style="
-                display: none;
-                color: #4ecdc4;
-                font-weight: bold;
-                font-size: 1.5em;
-                margin: 20px 0;
-              "
+              class="new-high-score-message"
+              style="display: none"
             >
-              🎉 NEW HIGH SCORE! 🎉
+              ⚡ NEW HIGH SCORE! ⚡
             </p>
-            <div
-              style="
-                display: flex;
-                gap: 20px;
-                justify-content: center;
-                margin-top: 30px;
-              "
-            >
-              <button onclick="startGame()">Play Again</button>
-              <button
-                onclick="returnToLanding()"
-                style="
-                  background: linear-gradient(
-                    135deg,
-                    #4ecdc4,
-                    #44a08d
-                  ) !important;
-                  border-color: #4ecdc4 !important;
-                "
-              >
+
+            <!-- Primary Score Display -->
+            <div class="primary-score">
+              <div class="primary-score-label">Final Score</div>
+              <div class="primary-score-value" id="finalScore">0</div>
+            </div>
+
+            <!-- Secondary Stats Grid -->
+            <div class="secondary-stats">
+              <div class="secondary-stat">
+                <div class="secondary-stat-value" id="wordsCompleted">0</div>
+                <div class="secondary-stat-label">Words Typed</div>
+              </div>
+              <div class="secondary-stat">
+                <div class="secondary-stat-value" id="bestCombo">0</div>
+                <div class="secondary-stat-label">Best Combo</div>
+              </div>
+              <div class="secondary-stat">
+                <div class="secondary-stat-value" id="gameOverHighScore">0</div>
+                <div class="secondary-stat-label">High Score</div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button class="primary-button" onclick="startGame()">
+                <span class="button-text">Play Again</span>
+                <span class="button-subtitle">Enter the Void</span>
+              </button>
+              <button class="secondary-button" onclick="returnToLanding()">
                 Return to Menu
               </button>
             </div>

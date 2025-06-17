@@ -153,6 +153,10 @@ class WordConstellation {
     // Clear all dramatic error effects before showing game over screen
     this.clearErrorEffects();
 
+    // Generate game over effects
+    generateGameOverStarField();
+    generateGameOverParticles();
+
     // Hide ALL game elements and show full-screen game over
     document.getElementById("header").style.display = "none";
     document.getElementById("gameCanvas").style.display = "none";
@@ -879,3 +883,64 @@ const returnAnimation = `
 const returnStyle = document.createElement("style");
 returnStyle.textContent = returnAnimation;
 document.head.appendChild(returnStyle);
+
+function generateGameOverStarField() {
+  const gameOverStarField = document.getElementById("gameOverStarField");
+  if (!gameOverStarField) return;
+
+  // Clear existing stars
+  gameOverStarField.innerHTML = "";
+
+  const starCount = 100;
+
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+
+    // Random size class
+    const sizes = ["small", "medium", "large"];
+    const weights = [70, 25, 5]; // 70% small, 25% medium, 5% large
+    const randomNum = Math.random() * 100;
+    let sizeClass = "small";
+
+    if (randomNum > weights[0]) {
+      sizeClass = randomNum > weights[0] + weights[1] ? "large" : "medium";
+    }
+
+    star.classList.add(sizeClass);
+
+    // Random position
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+
+    // Random animation delay
+    star.style.animationDelay = Math.random() * 6 + "s";
+
+    gameOverStarField.appendChild(star);
+  }
+}
+
+function generateGameOverParticles() {
+  const gameOverParticleSystem = document.getElementById(
+    "gameOverParticleSystem"
+  );
+  if (!gameOverParticleSystem) return;
+
+  // Clear existing particles
+  gameOverParticleSystem.innerHTML = "";
+
+  const particleCount = 20;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement("div");
+    particle.className = "game-over-floating-particle";
+
+    // Random horizontal position
+    particle.style.left = Math.random() * 100 + "%";
+
+    // Random animation delay
+    particle.style.animationDelay = Math.random() * 15 + "s";
+
+    gameOverParticleSystem.appendChild(particle);
+  }
+}
