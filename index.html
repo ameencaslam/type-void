@@ -81,12 +81,6 @@
 
       <canvas id="gameCanvas"></canvas>
 
-      <!-- Fruit Ninja Style Combo Display -->
-      <div id="comboDisplay">
-        <div class="combo-text" id="comboText">COMBO</div>
-        <div class="combo-multiplier" id="comboMultiplier">2X</div>
-      </div>
-
       <div id="gameUI">
         <div id="currentWord">
           <div id="wordContainer">
@@ -94,6 +88,15 @@
             <div id="wordDisplay"></div>
             <div id="typingIndicator">
               <div id="cursor"></div>
+            </div>
+          </div>
+          <!-- Persistent Combo Counter -->
+          <div id="persistentCombo">
+            <div id="comboCounter">0x</div>
+            <!-- Local Combo Lost Display -->
+            <div id="comboLostDisplay">
+              <div class="combo-lost-text">COMBO LOST</div>
+              <div class="combo-lost-particles"></div>
             </div>
           </div>
         </div>

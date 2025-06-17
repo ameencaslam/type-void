@@ -426,12 +426,12 @@ body {
 }
 
 #wordDisplay .letter.current {
-  background: linear-gradient(135deg, #ff4444, #cc1111);
+  background: linear-gradient(135deg, #409fff, #0088cc);
   color: #ffffff;
-  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-  border-color: #ff4444;
+  text-shadow: 0 0 8px rgba(64, 159, 255, 0.8);
+  border-color: #409fff;
   animation: currentLetter 1.2s ease-in-out infinite alternate;
-  box-shadow: 0 0 25px rgba(255, 68, 68, 0.8);
+  box-shadow: 0 0 25px rgba(64, 159, 255, 0.8);
   position: relative;
 }
 
@@ -445,11 +445,11 @@ body {
 @keyframes currentLetter {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 25px rgba(255, 68, 68, 0.8);
+    box-shadow: 0 0 25px rgba(64, 159, 255, 0.8);
   }
   100% {
     transform: scale(1.08);
-    box-shadow: 0 0 35px rgba(255, 68, 68, 1);
+    box-shadow: 0 0 35px rgba(64, 159, 255, 1);
   }
 }
 
@@ -941,126 +941,328 @@ body::before {
   }
 }
 
-/* Fruit Ninja Style Combo Display */
-#comboDisplay {
-  position: fixed;
-  top: calc(50% + 120px);
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none;
-  z-index: 100;
-  display: none;
+/* Persistent Combo Counter */
+#persistentCombo {
+  margin-top: 20px;
+  text-align: center;
+  position: relative;
+  min-height: 60px;
 }
 
-.combo-text {
-  font-size: 3em;
+#comboCounter {
+  font-size: 2.5em;
   font-weight: 900;
-  color: #ff6b6b;
-  text-shadow: 0 0 15px #ff6b6b, 0 0 25px #ff6b6b, 0 0 35px #ff6b6b,
-    2px 2px 0 #aa0000, 4px 4px 0 #880000;
-  text-transform: uppercase;
+  color: #409fff;
+  text-shadow: 0 0 20px #409fff, 0 0 40px #409fff;
+  font-family: "Courier New", monospace;
   letter-spacing: 3px;
-  animation: comboAppear 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-  opacity: 0;
-  transform: scale(0) rotate(-15deg);
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
 }
 
-.combo-multiplier {
-  font-size: 4em;
+#comboCounter.animate-up {
+  animation: comboCounterUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    voidComboShake 0.15s ease-in-out 3 0.6s;
+}
+
+#comboCounter::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle, rgba(64, 159, 255, 0.1), transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+#comboCounter.animate-up::before {
+  animation: comboGlowPulse 0.6s ease-out;
+}
+
+/* Combo Lost Display - Local to combo counter */
+#comboLostDisplay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.combo-lost-text {
+  font-size: 2em;
   font-weight: 900;
-  color: #ffdd59;
-  text-shadow: 0 0 20px #ffdd59, 0 0 30px #ffdd59, 0 0 40px #ffdd59,
-    3px 3px 0 #cc9900, 6px 6px 0 #996600;
+  color: #ff4444;
+  text-shadow: 0 0 30px #ff4444, 0 0 60px #ff4444, 0 0 90px #ff4444;
   text-transform: uppercase;
-  letter-spacing: 5px;
-  animation: comboMultiplierAppear 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)
-    forwards;
+  letter-spacing: 4px;
+  font-family: "Courier New", monospace;
   opacity: 0;
-  transform: scale(0) rotate(15deg);
-  margin-top: -15px;
+  transform: scale(0);
+  position: relative;
+  z-index: 2;
 }
 
-@keyframes comboAppear {
+.combo-lost-text.animate {
+  animation: comboLostAppear 1.5s ease-out forwards;
+}
+
+.combo-lost-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: #ff4444;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.combo-lost-particles.animate {
+  animation: comboLostParticles 1.5s ease-out forwards;
+}
+
+@keyframes comboCounterUp {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  10% {
+    transform: translate(-3px, -2px) scale(1.1);
+  }
+  20% {
+    transform: translate(3px, 2px) scale(1.05);
+  }
+  30% {
+    transform: translate(-2px, 3px) scale(1.08);
+  }
+  40% {
+    transform: translate(2px, -1px) scale(1.03);
+  }
+  50% {
+    transform: translate(-1px, 2px) scale(1.06);
+  }
+  60% {
+    transform: translate(1px, -3px) scale(1.02);
+  }
+  70% {
+    transform: translate(-2px, 1px) scale(1.04);
+  }
+  80% {
+    transform: translate(1px, -1px) scale(1.01);
+  }
+  90% {
+    transform: translate(-1px, 1px) scale(1.02);
+  }
+}
+
+@keyframes comboGlowPulse {
   0% {
     opacity: 0;
-    transform: scale(0) rotate(-15deg);
+    transform: scale(0);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+@keyframes comboLostAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2);
   }
   40% {
     opacity: 1;
-    transform: scale(1.3) rotate(-5deg);
-  }
-  60% {
-    transform: scale(1.1) rotate(2deg);
+    transform: scale(1);
   }
   80% {
-    transform: scale(1.05) rotate(-1deg);
-  }
-  90% {
     opacity: 1;
-    transform: scale(1) rotate(0deg);
+    transform: scale(1);
   }
   100% {
     opacity: 0;
-    transform: scale(0.8) rotate(0deg);
+    transform: scale(0.8);
   }
 }
 
-@keyframes comboMultiplierAppear {
+@keyframes comboLostParticles {
   0% {
     opacity: 0;
-    transform: scale(0) rotate(15deg);
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 20px #ff4444;
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 30px #ff4444, 30px -30px 20px #ff4444,
+      -30px 30px 20px #ff4444, 30px 30px 20px #ff4444, -30px -30px 20px #ff4444;
   }
   50% {
-    opacity: 1;
-    transform: scale(1.4) rotate(8deg);
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 40px #ff4444, 60px -60px 15px #ff4444,
+      -60px 60px 15px #ff4444, 60px 60px 15px #ff4444, -60px -60px 15px #ff4444,
+      80px 0px 12px #ff4444, -80px 0px 12px #ff4444, 0px 80px 12px #ff4444,
+      0px -80px 12px #ff4444;
   }
-  70% {
-    transform: scale(1.2) rotate(-3deg);
-  }
-  85% {
-    transform: scale(1.1) rotate(1deg);
-  }
-  95% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
+  80% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.8);
+    box-shadow: 0 0 20px #ff4444, 120px -120px 8px #ff4444,
+      -120px 120px 8px #ff4444, 120px 120px 8px #ff4444,
+      -120px -120px 8px #ff4444, 150px 0px 6px #ff4444, -150px 0px 6px #ff4444,
+      0px 150px 6px #ff4444, 0px -150px 6px #ff4444;
   }
   100% {
     opacity: 0;
-    transform: scale(0.7) rotate(0deg);
+    transform: translate(-50%, -50%) scale(0.5);
+    box-shadow: 0 0 5px #ff4444, 200px -200px 3px #ff4444,
+      -200px 200px 3px #ff4444, 200px 200px 3px #ff4444,
+      -200px -200px 3px #ff4444, 250px 0px 2px #ff4444, -250px 0px 2px #ff4444,
+      0px 250px 2px #ff4444, 0px -250px 2px #ff4444;
   }
 }
 
-/* Combo streak effects */
-.combo-streak-3 .combo-text {
-  color: #4ecdc4;
-  text-shadow: 0 0 20px #4ecdc4, 0 0 40px #4ecdc4, 0 0 60px #4ecdc4,
-    3px 3px 0 #2a7a7a, 6px 6px 0 #1a5555;
+/* Combo Counter Streak Effects */
+#comboCounter.streak-3 {
+  color: #6dd5ed;
+  text-shadow: 0 0 25px #6dd5ed, 0 0 50px #6dd5ed;
+  animation: subtleShake3 2s ease-in-out infinite;
 }
 
-.combo-streak-5 .combo-text {
-  color: #a855f7;
-  text-shadow: 0 0 25px #a855f7, 0 0 50px #a855f7, 0 0 75px #a855f7,
-    3px 3px 0 #6b21a8, 6px 6px 0 #4c1d95;
+#comboCounter.streak-5 {
+  color: #c471ed;
+  text-shadow: 0 0 30px #c471ed, 0 0 60px #c471ed;
+  animation: subtleShake5 1.8s ease-in-out infinite;
 }
 
-.combo-streak-10 .combo-text {
-  color: #f59e0b;
-  text-shadow: 0 0 30px #f59e0b, 0 0 60px #f59e0b, 0 0 90px #f59e0b,
-    3px 3px 0 #b45309, 6px 6px 0 #92400e;
-  animation: comboAppear 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards,
-    comboShake 0.1s ease-in-out 3 1.2s;
+#comboCounter.streak-10 {
+  color: #ffd700;
+  text-shadow: 0 0 35px #ffd700, 0 0 70px #ffd700;
+  animation: subtleShake10 1.5s ease-in-out infinite;
 }
 
-@keyframes comboShake {
+#comboCounter.streak-3::before {
+  background: radial-gradient(
+    circle,
+    rgba(109, 213, 237, 0.15),
+    transparent 70%
+  );
+}
+
+#comboCounter.streak-5::before {
+  background: radial-gradient(
+    circle,
+    rgba(196, 113, 237, 0.15),
+    transparent 70%
+  );
+}
+
+#comboCounter.streak-10::before {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.2), transparent 70%);
+}
+
+@keyframes voidComboShake {
   0%,
   100% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1);
+    text-shadow: inherit;
   }
   25% {
-    transform: scale(1.05) rotate(-2deg);
+    transform: scale(1.05);
+    text-shadow: 0 0 60px currentColor, 0 0 120px currentColor,
+      0 0 180px currentColor, 5px 5px 10px currentColor,
+      -5px -5px 10px currentColor;
+  }
+  50% {
+    transform: scale(1.08);
+    text-shadow: 0 0 80px currentColor, 0 0 160px currentColor,
+      0 0 240px currentColor, -5px 5px 15px currentColor,
+      5px -5px 15px currentColor;
   }
   75% {
-    transform: scale(1.05) rotate(2deg);
+    transform: scale(1.03);
+    text-shadow: 0 0 60px currentColor, 0 0 120px currentColor,
+      0 0 180px currentColor, 3px -3px 8px currentColor,
+      -3px 3px 8px currentColor;
+  }
+}
+
+/* Continuous Subtle Shake Animations for Different Combo Levels */
+@keyframes subtleShake3 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(0.5px, -0.5px);
+  }
+  50% {
+    transform: translate(-0.5px, 0.5px);
+  }
+  75% {
+    transform: translate(0.5px, 0.5px);
+  }
+}
+
+@keyframes subtleShake5 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(1px, -0.5px);
+  }
+  40% {
+    transform: translate(-0.5px, 1px);
+  }
+  60% {
+    transform: translate(1px, 0.5px);
+  }
+  80% {
+    transform: translate(-1px, -0.5px);
+  }
+}
+
+@keyframes subtleShake10 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  16% {
+    transform: translate(1.5px, -1px) scale(1.01);
+  }
+  33% {
+    transform: translate(-1px, 1.5px) scale(0.99);
+  }
+  50% {
+    transform: translate(1.5px, 1px) scale(1.01);
+  }
+  66% {
+    transform: translate(-1.5px, -0.5px) scale(0.99);
+  }
+  83% {
+    transform: translate(0.5px, -1.5px) scale(1.01);
   }
 }
 
@@ -1543,15 +1745,22 @@ body::before {
 }
 
 .landing-subtitle {
-  font-size: 1.6em;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
-  color: #cccccc;
-  margin-bottom: 50px;
-  text-shadow: 0 0 25px rgba(64, 159, 255, 0.4);
+  font-size: 1.2em;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  color: #8892b0;
+  margin-bottom: 40px;
+  text-shadow: 0 0 15px rgba(64, 159, 255, 0.3);
   opacity: 0;
   animation: subtitleFadeIn 2s ease-out 1s forwards;
-  letter-spacing: 3px;
-  font-weight: 300;
+  letter-spacing: 1px;
+  font-weight: 400;
+  text-transform: lowercase;
+  border-left: 3px solid rgba(64, 159, 255, 0.6);
+  padding-left: 15px;
+  background: linear-gradient(90deg, rgba(64, 159, 255, 0.1), transparent);
+  padding: 8px 15px;
+  border-radius: 0 8px 8px 0;
+  backdrop-filter: blur(5px);
 }
 
 @keyframes subtitleFadeIn {
@@ -1565,29 +1774,28 @@ body::before {
   }
 }
 
-/* Dramatic Start Button */
+/* Compact Start Button */
 .start-button {
   background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
   background-size: 200% 100%;
   border: none;
   color: #ffffff;
-  padding: 25px 60px;
-  font-size: 1.6em;
-  font-weight: 900;
-  border-radius: 50px;
+  padding: 16px 36px;
+  font-size: 1.2em;
+  font-weight: 700;
+  border-radius: 8px;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(10, 10, 10, 0.8),
-    0 0 20px rgba(64, 159, 255, 0.3);
-  text-shadow: 0 0 10px rgba(64, 159, 255, 0.8);
+  box-shadow: 0 6px 20px rgba(10, 10, 10, 0.7), 0 0 15px rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 8px rgba(64, 159, 255, 0.8);
   position: relative;
   overflow: hidden;
   opacity: 0;
   animation: buttonFadeIn 1.5s ease-out 1s forwards,
     buttonGlow 3s ease-in-out 2.5s infinite;
-  border: 2px solid rgba(64, 159, 255, 0.4);
+  border: 1px solid rgba(64, 159, 255, 0.4);
   will-change: transform, box-shadow;
 }
 
@@ -1610,13 +1818,13 @@ body::before {
 .start-button::after {
   content: "";
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
   background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #409fff, #0a0a0a);
   background-size: 200% 200%;
-  border-radius: 50px;
+  border-radius: 8px;
   z-index: -1;
   animation: voidBorder 4s ease-in-out infinite;
   opacity: 0;

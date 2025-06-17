@@ -7,7 +7,7 @@ class WordConstellation {
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
-    this.gameTime = 15;
+    this.gameTime = 60;
     this.timeLeft = this.gameTime;
     this.score = 0;
     this.combo = 0;
@@ -264,10 +264,8 @@ class WordConstellation {
     this.maxCombo = Math.max(this.maxCombo, this.combo);
     this.lastWordTime = Date.now();
 
-    // Show Fruit Ninja style combo display for combos >= 2
-    if (this.combo >= 2) {
-      this.showCombo(this.combo);
-    }
+    // Animate the persistent combo counter
+    this.updatePersistentCombo(this.combo, true);
 
     // Calculate WPM
     const gameTimeElapsed = (Date.now() - this.gameStartTime) / 1000 / 60;
@@ -327,6 +325,9 @@ class WordConstellation {
     document.getElementById("score").textContent = `Score: ${this.score}`;
     document.getElementById("combo").textContent = `Combo: ${this.combo}x`;
     document.getElementById("wpm").textContent = `WPM: ${this.wpm}`;
+
+    // Update persistent combo counter
+    this.updatePersistentCombo(this.combo);
 
     const timerElement = document.getElementById("timer");
     if (!this.timerStarted) {
@@ -452,63 +453,73 @@ class WordConstellation {
     }
   }
 
-  showCombo(comboCount) {
-    const comboDisplay = document.getElementById("comboDisplay");
-    const comboText = document.getElementById("comboText");
-    const comboMultiplier = document.getElementById("comboMultiplier");
+  updatePersistentCombo(comboCount, animate = false) {
+    const comboCounter = document.getElementById("comboCounter");
+    if (!comboCounter) return;
 
-    // Clear any existing classes
-    comboDisplay.className = "";
-
-    // Add streak classes for special effects
-    if (comboCount >= 10) {
-      comboDisplay.classList.add("combo-streak-10");
-    } else if (comboCount >= 5) {
-      comboDisplay.classList.add("combo-streak-5");
-    } else if (comboCount >= 3) {
-      comboDisplay.classList.add("combo-streak-3");
+    // Hide combo counter if it's 0, show otherwise
+    if (comboCount === 0) {
+      comboCounter.style.display = "none";
+      return;
+    } else {
+      comboCounter.style.display = "inline-block";
     }
 
     // Update text
-    comboText.textContent = "COMBO";
-    comboMultiplier.textContent = `${comboCount}X`;
+    comboCounter.textContent = `${comboCount}x`;
 
-    // Show the display
-    comboDisplay.style.display = "block";
+    // Clear existing classes
+    comboCounter.className = "";
 
-    // Hide after animation completes
-    setTimeout(() => {
-      comboDisplay.style.display = "none";
-    }, 800);
+    // Add streak classes for color changes
+    if (comboCount >= 10) {
+      comboCounter.classList.add("streak-10");
+    } else if (comboCount >= 5) {
+      comboCounter.classList.add("streak-5");
+    } else if (comboCount >= 3) {
+      comboCounter.classList.add("streak-3");
+    }
+
+    // Add animation if requested
+    if (animate && comboCount > 0) {
+      comboCounter.classList.add("animate-up");
+      // Remove animation class after it completes
+      setTimeout(() => {
+        comboCounter.classList.remove("animate-up");
+      }, 600);
+    }
   }
 
   showComboLoss(lostCombo) {
-    const comboDisplay = document.getElementById("comboDisplay");
-    const comboText = document.getElementById("comboText");
-    const comboMultiplier = document.getElementById("comboMultiplier");
+    const comboLostDisplay = document.getElementById("comboLostDisplay");
+    const comboLostText = document.querySelector(".combo-lost-text");
+    const comboLostParticles = document.querySelector(".combo-lost-particles");
 
-    // Clear any existing classes and add combo loss class
-    comboDisplay.className = "";
-    comboText.className = "combo-loss";
-    comboMultiplier.className = "combo-loss";
+    // Clear any existing animation classes
+    comboLostText.classList.remove("animate");
+    comboLostParticles.classList.remove("animate");
 
-    // Update text
-    comboText.textContent = "COMBO LOST";
-    comboMultiplier.textContent = `${lostCombo}X`;
+    // Show the local combo lost display
+    comboLostDisplay.style.display = "flex";
 
-    // Show the display
-    comboDisplay.style.display = "block";
+    // Trigger animations
+    setTimeout(() => {
+      comboLostText.classList.add("animate");
+      comboLostParticles.classList.add("animate");
+    }, 50);
 
     // Trigger dramatic error effect for combo loss
     this.triggerDramaticError("combo");
 
+    // Update persistent combo counter to show 0 (hides it)
+    this.updatePersistentCombo(0);
+
     // Hide after animation completes
     setTimeout(() => {
-      comboDisplay.style.display = "none";
-      // Reset classes
-      comboText.className = "combo-text";
-      comboMultiplier.className = "combo-multiplier";
-    }, 1000);
+      comboLostDisplay.style.display = "none";
+      comboLostText.classList.remove("animate");
+      comboLostParticles.classList.remove("animate");
+    }, 1500);
   }
 
   triggerDramaticError(type) {
@@ -545,21 +556,8 @@ class WordConstellation {
           .getElementById("currentWord")
           .classList.remove("error-pulse-border");
 
-        // Intense screen shake + critical flash + border pulse
+        // Just screen shake for combo loss - no red overlay
         container.classList.add("screen-shake");
-        overlay.style.display = "block";
-        overlay.classList.add("critical-flash");
-        document
-          .getElementById("currentWord")
-          .classList.add("error-pulse-border");
-
-        setTimeout(() => {
-          overlay.style.display = "none";
-          overlay.classList.remove("critical-flash");
-          document
-            .getElementById("currentWord")
-            .classList.remove("error-pulse-border");
-        }, 1200);
 
         setTimeout(() => {
           container.classList.remove("screen-shake");
