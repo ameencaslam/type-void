@@ -479,7 +479,7 @@ class WordConstellation {
     // Hide after animation completes
     setTimeout(() => {
       comboDisplay.style.display = "none";
-    }, 1500);
+    }, 800);
   }
 
   showComboLoss(lostCombo) {
@@ -708,12 +708,12 @@ function startFromLanding() {
   }
 
   // Dramatic transition effect
-  landingScreen.style.animation = "landingScreenExit 1.5s ease-in forwards";
+  landingScreen.style.animation = "landingScreenExit 0.8s ease-in forwards";
 
   setTimeout(() => {
     landingScreen.style.display = "none";
     gameContainer.style.display = "block";
-    gameContainer.style.animation = "gameContainerEnter 1s ease-out forwards";
+    gameContainer.style.animation = "gameContainerEnter 0.6s ease-out forwards";
 
     // Generate game screen effects
     generateGameStarField();
@@ -786,33 +786,24 @@ function generateGameParticles() {
 // Add exit animation to CSS dynamically
 const exitAnimation = `
 @keyframes landingScreenExit {
-  0% {
+  from {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
+    transform: translateY(0px);
   }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-    filter: blur(2px);
-  }
-  100% {
+  to {
     opacity: 0;
-    transform: scale(1.3);
-    filter: blur(5px);
+    transform: translateY(-30px);
   }
 }
 
 @keyframes gameContainerEnter {
   from {
     opacity: 0;
-    transform: scale(0.9);
-    filter: blur(3px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
+    transform: translateY(0px);
   }
 }
 `;
@@ -836,45 +827,41 @@ function returnToLanding() {
   game.clearErrorEffects();
 
   // Animate game container exit
-  gameContainer.style.animation = "gameContainerExit 1s ease-in forwards";
+  gameContainer.style.animation = "gameContainerExit 0.6s ease-in forwards";
 
   setTimeout(() => {
     gameContainer.style.display = "none";
     landingScreen.style.display = "flex";
     landingScreen.style.animation =
-      "landingScreenReturn 1.5s ease-out forwards";
+      "landingScreenReturn 0.8s ease-out forwards";
 
     // Regenerate particles for fresh effect
     document.getElementById("particleSystem").innerHTML = "";
     generateParticles();
-  }, 1000);
+  }, 600);
 }
 
 // Add return animation CSS
 const returnAnimation = `
 @keyframes gameContainerExit {
-  0% {
+  from {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
+    transform: translateY(0px);
   }
-  100% {
+  to {
     opacity: 0;
-    transform: scale(0.8);
-    filter: blur(5px);
+    transform: translateY(20px);
   }
 }
 
 @keyframes landingScreenReturn {
   from {
     opacity: 0;
-    transform: scale(1.2);
-    filter: blur(3px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0px);
+    transform: translateY(0px);
   }
 }
 `;

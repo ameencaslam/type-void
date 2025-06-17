@@ -15,6 +15,29 @@
       <!-- Floating Particles -->
       <div class="particle-system" id="particleSystem"></div>
 
+      <!-- Depth Elements with Focus Effect -->
+      <div class="depth-elements">
+        <!-- Far background elements (heavily blurred) -->
+        <div class="depth-layer far-background">
+          <div class="depth-shape shape-triangle"></div>
+          <div class="depth-shape shape-square"></div>
+          <div class="depth-shape shape-diamond"></div>
+        </div>
+
+        <!-- Mid-distance elements (medium blur) -->
+        <div class="depth-layer mid-distance">
+          <div class="depth-shape shape-hexagon"></div>
+          <div class="depth-shape shape-circle"></div>
+          <div class="depth-shape shape-line"></div>
+        </div>
+
+        <!-- Near elements (light blur) -->
+        <div class="depth-layer near-foreground">
+          <div class="depth-shape shape-cross"></div>
+          <div class="depth-shape shape-pentagon"></div>
+        </div>
+      </div>
+
       <!-- Orbital Rings -->
       <div class="orbital-ring"></div>
       <div class="orbital-ring"></div>
@@ -25,7 +48,7 @@
 
       <!-- Landing Content -->
       <div class="landing-content">
-        <h1 class="landing-title">⚡ Void Runner ⚡</h1>
+        <h1 class="landing-title">VOID RUNNER</h1>
         <p class="landing-subtitle">Race Through the Digital Void</p>
         <button class="start-button" onclick="startFromLanding()">
           ENTER THE VOID
