@@ -152,6 +152,14 @@ class WordConstellation {
       }
 
       if (e.code === "Escape") {
+        // Play ending sound and do blackout sequence like when timer runs out
+        if (this.endingSound && !this.bgm.muted) {
+          this.bgm.pause();
+          this.endingSound.currentTime = 0;
+          this.endingSound
+            .play()
+            .catch((e) => console.log("Ending sound failed", e));
+        }
         this.endGame();
         return;
       }
