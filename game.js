@@ -30,6 +30,9 @@ class WordConstellation {
       });
     }
 
+    // Synesthetic Typing System
+    this.setupSynestheticSystem();
+
     // Game state
     this.isPlaying = false;
     this.isPaused = false;
@@ -256,6 +259,9 @@ class WordConstellation {
     // Clear any dramatic timer effects immediately
     this.clearTimerEffects();
 
+    // Clear synesthetic effects
+    this.clearSynestheticEffects();
+
     // Update high scores
     this.sessionBestScore = Math.max(this.sessionBestScore, this.score);
 
@@ -375,6 +381,19 @@ class WordConstellation {
         document.getElementById("timeSelection").classList.add("disabled");
       }
 
+      // SYNESTHETIC EFFECTS - Play note and create visual trail for each letter
+      this.playLetterNote(key, 0.2);
+
+      // Get letter position for visual effects
+      const wordDisplay = document.getElementById("wordDisplay");
+      const wordContainer = document.getElementById("wordContainer");
+      if (wordDisplay && wordContainer) {
+        const rect = wordContainer.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        this.createLetterTrail(key, centerX, centerY);
+      }
+
       this.typedText += key;
 
       // Check if word is complete
@@ -403,6 +422,9 @@ class WordConstellation {
 
   completeWord() {
     const word = this.currentWord;
+
+    // SYNESTHETIC CELEBRATION - Play word melody
+    this.playWordMelody(word.text);
 
     // Calculate points with speed and combo bonuses
     const basePoints = getWordPoints(word.text);
@@ -455,8 +477,23 @@ class WordConstellation {
         // Apply appropriate class based on typing progress
         if (i < typed.length) {
           letterDiv.classList.add("typed");
+
+          // Add synesthetic color for typed letters
+          const letterColor = this.letterColors[word[i].toLowerCase()];
+          if (letterColor) {
+            letterDiv.style.backgroundColor = `hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
+            letterDiv.style.color = "#ffffff";
+            letterDiv.style.boxShadow = `0 0 15px hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
+          }
         } else if (i === typed.length) {
           letterDiv.classList.add("current");
+
+          // Add preview color for current letter
+          const letterColor = this.letterColors[word[i].toLowerCase()];
+          if (letterColor) {
+            letterDiv.style.borderColor = `hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
+            letterDiv.style.boxShadow = `0 0 20px hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
+          }
         } else {
           letterDiv.classList.add("pending");
         }
@@ -583,6 +620,57 @@ class WordConstellation {
     if (Date.now() - this.lastWordTime > 5000) {
       this.combo = 0;
     }
+
+    // Update synesthetic visual effects
+    this.updateSynestheticEffects(deltaTime);
+  }
+
+  updateSynestheticEffects(deltaTime) {
+    const dt = deltaTime / 1000; // Convert to seconds
+
+    // Update letter trails
+    for (let i = this.letterTrails.length - 1; i >= 0; i--) {
+      const trail = this.letterTrails[i];
+
+      // Update position
+      trail.x += trail.vx;
+      trail.y += trail.vy;
+
+      // Apply gravity and friction
+      trail.vy += 0.2; // Gravity
+      trail.vx *= 0.98; // Friction
+      trail.vy *= 0.98;
+
+      // Update life
+      trail.life -= dt * 2; // Fade over 0.5 seconds
+
+      // Remove dead trails
+      if (trail.life <= 0) {
+        this.letterTrails.splice(i, 1);
+      }
+    }
+
+    // Update harmonic visuals
+    for (let i = this.harmonicVisuals.length - 1; i >= 0; i--) {
+      const visual = this.harmonicVisuals[i];
+
+      // Update phase for wave animation
+      visual.phase += dt * visual.frequency * 0.01; // Scale down frequency for visual
+
+      // Update life
+      visual.life -= dt * 0.5; // Fade over 2 seconds
+
+      // Remove dead visuals
+      if (visual.life <= 0) {
+        this.harmonicVisuals.splice(i, 1);
+      }
+    }
+
+    // Clean up old melody entries
+    const now = Date.now();
+    this.currentMelody = this.currentMelody.filter(
+      (note) => now - note.time < 5000
+    );
   }
 
   render() {
@@ -603,6 +691,184 @@ class WordConstellation {
 
     this.ctx.fillStyle = gradient;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Render synesthetic effects
+    this.renderSynestheticEffects();
+  }
+
+  renderSynestheticEffects() {
+    // Render harmonic waveforms first (background)
+    this.renderHarmonicVisuals();
+
+    // Render letter trails
+    this.renderLetterTrails();
+
+    // Render melody visualization
+    this.renderMelodyVisualization();
+  }
+
+  renderHarmonicVisuals() {
+    this.ctx.save();
+
+    this.harmonicVisuals.forEach((visual) => {
+      const alpha = visual.life / visual.maxLife;
+      const color = visual.color;
+
+      // Create waveform across screen
+      this.ctx.globalAlpha = alpha * 0.3;
+      this.ctx.strokeStyle = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+
+      const waveLength = this.canvas.width;
+      const amplitude = visual.amplitude * 30 * alpha;
+      const centerY = this.canvas.height / 2;
+
+      for (let x = 0; x < waveLength; x += 5) {
+        const normalizedX = x / waveLength;
+        const y =
+          centerY +
+          Math.sin(normalizedX * Math.PI * 4 + visual.phase) * amplitude;
+
+        if (x === 0) {
+          this.ctx.moveTo(x, y);
+        } else {
+          this.ctx.lineTo(x, y);
+        }
+      }
+
+      this.ctx.stroke();
+
+      // Add secondary wave with different frequency
+      this.ctx.globalAlpha = alpha * 0.2;
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+
+      for (let x = 0; x < waveLength; x += 3) {
+        const normalizedX = x / waveLength;
+        const y =
+          centerY +
+          Math.sin(normalizedX * Math.PI * 8 + visual.phase * 1.5) *
+            amplitude *
+            0.5;
+
+        if (x === 0) {
+          this.ctx.moveTo(x, y);
+        } else {
+          this.ctx.lineTo(x, y);
+        }
+      }
+
+      this.ctx.stroke();
+    });
+
+    this.ctx.restore();
+  }
+
+  renderLetterTrails() {
+    this.ctx.save();
+
+    this.letterTrails.forEach((trail) => {
+      const alpha = trail.life / trail.maxLife;
+      const color = trail.color;
+
+      // Main particle
+      this.ctx.globalAlpha = alpha;
+      this.ctx.fillStyle = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+      this.ctx.beginPath();
+      this.ctx.arc(trail.x, trail.y, trail.size * alpha, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Glow effect
+      this.ctx.globalAlpha = alpha * 0.3;
+      this.ctx.fillStyle = `hsl(${color.h}, ${color.s}%, ${Math.min(
+        color.l + 20,
+        90
+      )}%)`;
+      this.ctx.beginPath();
+      this.ctx.arc(trail.x, trail.y, trail.size * alpha * 2, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Letter text (fading)
+      if (alpha > 0.7) {
+        this.ctx.globalAlpha = (alpha - 0.7) / 0.3;
+        this.ctx.fillStyle = `hsl(${color.h}, ${color.s}%, 90%)`;
+        this.ctx.font = `${trail.size * 2}px "Courier New", monospace`;
+        this.ctx.textAlign = "center";
+        this.ctx.textBaseline = "middle";
+        this.ctx.fillText(trail.letter.toUpperCase(), trail.x, trail.y);
+      }
+    });
+
+    this.ctx.restore();
+  }
+
+  renderMelodyVisualization() {
+    if (this.currentMelody.length === 0) return;
+
+    this.ctx.save();
+
+    const now = Date.now();
+    const melodyX = 50;
+    const melodyY = this.canvas.height - 100;
+
+    // Draw melody background
+    this.ctx.globalAlpha = 0.2;
+    this.ctx.fillStyle = "rgba(64, 159, 255, 0.1)";
+    this.ctx.fillRect(melodyX - 10, melodyY - 30, 400, 60);
+
+    // Draw melody notes
+    this.currentMelody.forEach((note, index) => {
+      const age = (now - note.time) / 1000; // seconds
+      const alpha = Math.max(0, 1 - age / 5); // Fade over 5 seconds
+
+      if (alpha <= 0) return;
+
+      const x = melodyX + index * 15;
+      const y = melodyY;
+      const color = note.color;
+
+      // Note circle
+      this.ctx.globalAlpha = alpha;
+      this.ctx.fillStyle = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, 8, 0, Math.PI * 2);
+      this.ctx.fill();
+
+      // Note letter
+      this.ctx.globalAlpha = alpha;
+      this.ctx.fillStyle = "white";
+      this.ctx.font = '12px "Courier New", monospace';
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+      this.ctx.fillText(note.letter.toUpperCase(), x, y);
+
+      // Connection line to next note
+      if (index < this.currentMelody.length - 1) {
+        const nextNote = this.currentMelody[index + 1];
+        const nextAge = (now - nextNote.time) / 1000;
+        const nextAlpha = Math.max(0, 1 - nextAge / 5);
+
+        if (nextAlpha > 0) {
+          this.ctx.globalAlpha = Math.min(alpha, nextAlpha) * 0.5;
+          this.ctx.strokeStyle = `hsl(${color.h}, ${color.s}%, ${color.l}%)`;
+          this.ctx.lineWidth = 2;
+          this.ctx.beginPath();
+          this.ctx.moveTo(x + 8, y);
+          this.ctx.lineTo(x + 15 - 8, y);
+          this.ctx.stroke();
+        }
+      }
+    });
+
+    // Add "MELODY" label
+    this.ctx.globalAlpha = 0.6;
+    this.ctx.fillStyle = "rgba(64, 159, 255, 0.8)";
+    this.ctx.font = '14px "Courier New", monospace';
+    this.ctx.textAlign = "left";
+    this.ctx.fillText("MELODY:", melodyX, melodyY - 50);
+
+    this.ctx.restore();
   }
 
   // High Score System - Updated for time-specific scores
@@ -843,6 +1109,298 @@ class WordConstellation {
     const expires = new Date();
     expires.setFullYear(expires.getFullYear() + 1);
     document.cookie = `wordConstellationTimePreference=${time}; expires=${expires.toUTCString()}; path=/`;
+  }
+
+  // SYNESTHETIC TYPING SYSTEM
+  setupSynestheticSystem() {
+    // Create audio context for musical notes
+    this.audioContext = null;
+    this.masterGain = null;
+
+    // Try to initialize audio context (user interaction required)
+    this.initializeAudio();
+
+    // Letter to frequency mapping (in Hz) - DEEP BASS THUD RANGE
+    this.letterFrequencies = {
+      a: 40.0, // Ultra-low bass thud
+      b: 45.0, // Deep kick drum
+      c: 50.0, // Low timpani
+      d: 55.0, // Bass drum
+      e: 60.0, // Deep thud
+      f: 65.0, // Low boom
+      g: 70.0, // Bass hit
+      h: 75.0, // Deep punch
+      i: 80.0, // Low thump
+      j: 85.0, // Bass knock
+      k: 90.0, // Deep pop
+      l: 95.0, // Low smack
+      m: 100.0, // Bass bump
+      n: 110.0, // Deep hit
+      o: 120.0, // Low strike
+      p: 130.0, // Bass tap
+      q: 140.0, // Deep click
+      r: 150.0, // Low bang
+      s: 160.0, // Bass snap
+      t: 170.0, // Deep crack
+      u: 180.0, // Low pop
+      v: 190.0, // Bass tick
+      w: 200.0, // Deep knock
+      x: 220.0, // Low hit
+      y: 240.0, // Bass thump
+      z: 260.0, // Deep boom
+    };
+
+    // Letter to color mapping (HSL values)
+    this.letterColors = {
+      a: { h: 0, s: 70, l: 60 }, // Red
+      b: { h: 15, s: 70, l: 60 }, // Red-Orange
+      c: { h: 30, s: 70, l: 60 }, // Orange
+      d: { h: 45, s: 70, l: 60 }, // Yellow-Orange
+      e: { h: 60, s: 70, l: 60 }, // Yellow
+      f: { h: 75, s: 70, l: 60 }, // Yellow-Green
+      g: { h: 90, s: 70, l: 60 }, // Green-Yellow
+      h: { h: 120, s: 70, l: 60 }, // Green
+      i: { h: 150, s: 70, l: 60 }, // Green-Cyan
+      j: { h: 180, s: 70, l: 60 }, // Cyan
+      k: { h: 195, s: 70, l: 60 }, // Cyan-Blue
+      l: { h: 210, s: 70, l: 60 }, // Light Blue
+      m: { h: 225, s: 70, l: 60 }, // Blue-Cyan
+      n: { h: 240, s: 70, l: 60 }, // Blue
+      o: { h: 255, s: 70, l: 60 }, // Blue-Purple
+      p: { h: 270, s: 70, l: 60 }, // Purple
+      q: { h: 285, s: 70, l: 60 }, // Purple-Magenta
+      r: { h: 300, s: 70, l: 60 }, // Magenta
+      s: { h: 315, s: 70, l: 60 }, // Magenta-Red
+      t: { h: 330, s: 70, l: 60 }, // Pink-Red
+      u: { h: 345, s: 70, l: 60 }, // Pink
+      v: { h: 20, s: 80, l: 70 }, // Bright Orange
+      w: { h: 200, s: 80, l: 70 }, // Bright Blue
+      x: { h: 280, s: 80, l: 70 }, // Bright Purple
+      y: { h: 50, s: 90, l: 75 }, // Bright Yellow
+      z: { h: 320, s: 90, l: 75 }, // Bright Magenta
+    };
+
+    // Visual trail system
+    this.letterTrails = [];
+    this.harmonicVisuals = [];
+
+    // Word melody system
+    this.currentMelody = [];
+    this.melodyTimeouts = [];
+  }
+
+  initializeAudio() {
+    // Audio context requires user interaction
+    const initAudio = () => {
+      if (!this.audioContext) {
+        try {
+          this.audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+          this.masterGain = this.audioContext.createGain();
+          this.masterGain.connect(this.audioContext.destination);
+          this.masterGain.gain.value = 0.3; // Overall volume for synesthetic sounds
+          console.log("Synesthetic audio initialized");
+        } catch (error) {
+          console.log("Audio context initialization failed:", error);
+        }
+      }
+      document.removeEventListener("click", initAudio);
+      document.removeEventListener("keydown", initAudio);
+    };
+
+    document.addEventListener("click", initAudio);
+    document.addEventListener("keydown", initAudio);
+  }
+
+  playLetterNote(letter, duration = 0.3) {
+    if (
+      !this.audioContext ||
+      !this.letterFrequencies[letter] ||
+      this.bgm.muted
+    ) {
+      return;
+    }
+
+    try {
+      // Create oscillator for the note
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      // Connect audio nodes
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      // BASS THUD SOUND DESIGN
+      const baseFreq = this.letterFrequencies[letter];
+
+      // Main bass oscillator (sine wave for pure low end)
+      oscillator.frequency.setValueAtTime(
+        baseFreq,
+        this.audioContext.currentTime
+      );
+      oscillator.type = "sine";
+
+      // Create a second oscillator for the "click" attack
+      const clickOsc = this.audioContext.createOscillator();
+      const clickGain = this.audioContext.createGain();
+      clickOsc.frequency.setValueAtTime(
+        baseFreq * 8,
+        this.audioContext.currentTime
+      ); // High frequency click
+      clickOsc.type = "square";
+      clickOsc.connect(clickGain);
+      clickGain.connect(this.masterGain);
+
+      // Bass filter - emphasize low end
+      const bassFilter = this.audioContext.createBiquadFilter();
+      bassFilter.type = "lowpass";
+      bassFilter.frequency.value = 200; // Cut everything above 200Hz
+      bassFilter.Q.value = 2; // Emphasize the cutoff
+
+      // High-pass filter to remove sub-sonic rumble
+      const hpFilter = this.audioContext.createBiquadFilter();
+      hpFilter.type = "highpass";
+      hpFilter.frequency.value = 30; // Remove anything below 30Hz
+      hpFilter.Q.value = 1;
+
+      // Connect audio chain: oscillator → highpass → lowpass → gain → output
+      oscillator.connect(hpFilter);
+      hpFilter.connect(bassFilter);
+      bassFilter.connect(gainNode);
+
+      // BASS THUD ENVELOPE - Sharp attack, quick decay
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+
+      // Instant attack for thud impact
+      gainNode.gain.linearRampToValueAtTime(
+        0.8,
+        this.audioContext.currentTime + 0.005
+      );
+
+      // Quick drop to sustain level
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.3,
+        this.audioContext.currentTime + 0.03
+      );
+
+      // Slow decay to silence
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.audioContext.currentTime + duration
+      );
+
+      // CLICK ATTACK ENVELOPE - Very brief high frequency snap
+      clickGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+      clickGain.gain.linearRampToValueAtTime(
+        0.3,
+        this.audioContext.currentTime + 0.001
+      );
+      clickGain.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.audioContext.currentTime + 0.02
+      );
+
+      // Start both oscillators
+      clickOsc.start(this.audioContext.currentTime);
+      clickOsc.stop(this.audioContext.currentTime + 0.02); // Click only lasts 20ms
+
+      // Start and stop the note
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + duration);
+    } catch (error) {
+      console.log("Error playing letter note:", error);
+    }
+  }
+
+  createLetterTrail(letter, x, y) {
+    const color = this.letterColors[letter];
+    if (!color) return;
+
+    // Create multiple trail particles
+    for (let i = 0; i < 8; i++) {
+      this.letterTrails.push({
+        x: x + (Math.random() - 0.5) * 40,
+        y: y + (Math.random() - 0.5) * 40,
+        vx: (Math.random() - 0.5) * 4,
+        vy: (Math.random() - 0.5) * 4,
+        life: 1.0,
+        maxLife: 1.0,
+        color: color,
+        size: Math.random() * 8 + 4,
+        letter: letter,
+        createdAt: Date.now(),
+      });
+    }
+  }
+
+  createWaveformVisual(letter, intensity = 1.0) {
+    const color = this.letterColors[letter];
+    const frequency = this.letterFrequencies[letter];
+    if (!color || !frequency) return;
+
+    // Create a visual waveform that ripples across the screen
+    this.harmonicVisuals.push({
+      letter: letter,
+      color: color,
+      frequency: frequency,
+      amplitude: intensity,
+      phase: 0,
+      life: 1.0,
+      maxLife: 2.0,
+      createdAt: Date.now(),
+    });
+  }
+
+  playWordMelody(word) {
+    if (!this.audioContext || this.bgm.muted) return;
+
+    // Clear existing melody timeouts
+    this.melodyTimeouts.forEach((timeout) => clearTimeout(timeout));
+    this.melodyTimeouts = [];
+
+    // Play each letter with slight delay to create melody
+    word
+      .toLowerCase()
+      .split("")
+      .forEach((letter, index) => {
+        const timeout = setTimeout(() => {
+          this.playLetterNote(letter, 0.4);
+
+          // Create harmonic visual effect
+          this.createWaveformVisual(letter, 0.8);
+
+          // Add to current melody visualization
+          this.currentMelody.push({
+            letter: letter,
+            color: this.letterColors[letter],
+            time: Date.now(),
+            position: index,
+          });
+
+          // Keep melody array manageable
+          if (this.currentMelody.length > 20) {
+            this.currentMelody.shift();
+          }
+        }, index * 100); // 100ms between notes
+
+        this.melodyTimeouts.push(timeout);
+      });
+  }
+
+  clearSynestheticEffects() {
+    // Clear all visual effects
+    this.letterTrails = [];
+    this.harmonicVisuals = [];
+    this.currentMelody = [];
+
+    // Clear any pending melody timeouts
+    this.melodyTimeouts.forEach((timeout) => clearTimeout(timeout));
+    this.melodyTimeouts = [];
+
+    // Stop any ongoing audio oscillators (they auto-cleanup, but good practice)
+    if (this.audioContext && this.audioContext.state !== "closed") {
+      // Audio context cleanup is automatic for short-lived oscillators
+    }
   }
 }
 
