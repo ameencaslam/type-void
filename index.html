@@ -230,6 +230,64 @@
         </div>
       </div>
 
+      <!-- Settings Menu -->
+      <div id="settingsMenu" class="settings-menu">
+        <div class="settings-header">
+          <button id="settingsToggle" class="settings-toggle">⚙️</button>
+        </div>
+        <div id="settingsContent" class="settings-content">
+          <div class="setting-item">
+            <label class="setting-label">Sound</label>
+            <button id="soundToggleInMenu" class="setting-toggle">
+              <span class="toggle-on">ON</span>
+              <span class="toggle-off">OFF</span>
+            </button>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">BGM Volume</label>
+            <div class="volume-control">
+              <input
+                type="range"
+                id="bgmVolumeSlider"
+                class="volume-slider"
+                min="0"
+                max="100"
+                value="30"
+              />
+              <span id="bgmVolumeValue" class="volume-value">30%</span>
+            </div>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">Typing Sound Volume</label>
+            <div class="volume-control">
+              <input
+                type="range"
+                id="typingVolumeSlider"
+                class="volume-slider"
+                min="0"
+                max="100"
+                value="30"
+              />
+              <span id="typingVolumeValue" class="volume-value">30%</span>
+            </div>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">Game Sound Volume</label>
+            <div class="volume-control">
+              <input
+                type="range"
+                id="gameSoundVolumeSlider"
+                class="volume-slider"
+                min="0"
+                max="100"
+                value="30"
+              />
+              <span id="gameSoundVolumeValue" class="volume-value">30%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ESC hint at bottom of game screen -->
       <div id="escHint" class="esc-hint">Press ESC to exit</div>
     </div>

@@ -7,9 +7,14 @@ class WordConstellation {
     // Audio elements
     this.bgm = document.getElementById("bgm");
     this.bgm.volume = 0.3; // Set initial volume to 30%
+    // Game sound volume (separate from BGM and typing sounds) - load from localStorage
+    const savedGameSoundVolume =
+      localStorage.getItem("gameSoundVolume") || "30";
+    this.gameSoundVolume = parseInt(savedGameSoundVolume) / 100;
+
     this.warningSound = document.getElementById("warningSound");
     if (this.warningSound) {
-      this.warningSound.volume = 0.5;
+      this.warningSound.volume = 0.5 * this.gameSoundVolume;
       this.warningSound.addEventListener("ended", () => {
         if (this.isPlaying && !this.bgm.muted && this.bgm.paused) {
           this.bgm.play().catch((e) => console.log("BGM resume failed", e));
@@ -17,10 +22,10 @@ class WordConstellation {
       });
     }
     this.startSound = document.getElementById("startSound");
-    if (this.startSound) this.startSound.volume = 0.4;
+    if (this.startSound) this.startSound.volume = 0.4 * this.gameSoundVolume;
     this.endingSound = document.getElementById("endingSound");
     if (this.endingSound) {
-      this.endingSound.volume = 0.6;
+      this.endingSound.volume = 0.6 * this.gameSoundVolume;
       this.endingSound.addEventListener("ended", () => {
         // After the game-over sound, restart the BGM for the menu
         if (!this.bgm.muted) {
@@ -95,6 +100,9 @@ class WordConstellation {
     this.soundToggle.addEventListener("click", () => {
       this.setMuted(!this.bgm.muted);
     });
+
+    // Settings menu functionality
+    this.setupSettingsMenu();
 
     // Try to play BGM on first interaction
     const playBgmOnFirstInteraction = () => {
@@ -267,6 +275,8 @@ class WordConstellation {
     document.getElementById("scoreContainer").style.display = "block";
     document.getElementById("highScoreContainer").style.display = "block";
     document.getElementById("timeSelection").style.display = "flex";
+    document.getElementById("settingsMenu").style.display = "block";
+    document.getElementById("escHint").style.display = "block";
     document.getElementById("timeSelection").classList.remove("disabled");
     document.getElementById("gameOver").style.display = "none";
     document.getElementById("gameOver").classList.add("hidden");
@@ -345,6 +355,8 @@ class WordConstellation {
       document.getElementById("scoreContainer").style.display = "none";
       document.getElementById("highScoreContainer").style.display = "none";
       document.getElementById("timeSelection").style.display = "none";
+      document.getElementById("settingsMenu").style.display = "none";
+      document.getElementById("escHint").style.display = "none";
       document.getElementById("gameOver").style.display = "flex";
       document.getElementById("gameOver").classList.remove("hidden");
 
@@ -1162,8 +1174,107 @@ class WordConstellation {
       this.soundOnIcon.style.display = "inline";
       this.soundOffIcon.style.display = "none";
     }
+
+    // Update settings menu toggle
+    const menuToggle = document.getElementById("soundToggleInMenu");
+    if (menuToggle) {
+      if (muted) {
+        menuToggle.classList.add("off");
+      } else {
+        menuToggle.classList.remove("off");
+      }
+    }
+
     // Optionally, persist state
     localStorage.setItem("soundMuted", muted ? "1" : "0");
+  }
+
+  setupSettingsMenu() {
+    const settingsMenu = document.getElementById("settingsMenu");
+    const settingsHeader = document.querySelector(".settings-header");
+    const soundToggleInMenu = document.getElementById("soundToggleInMenu");
+    const bgmVolumeSlider = document.getElementById("bgmVolumeSlider");
+    const bgmVolumeValue = document.getElementById("bgmVolumeValue");
+    const typingVolumeSlider = document.getElementById("typingVolumeSlider");
+    const typingVolumeValue = document.getElementById("typingVolumeValue");
+    const gameSoundVolumeSlider = document.getElementById(
+      "gameSoundVolumeSlider"
+    );
+    const gameSoundVolumeValue = document.getElementById(
+      "gameSoundVolumeValue"
+    );
+
+    // Load saved volumes
+    const savedBgmVolume = localStorage.getItem("bgmVolume") || "30";
+    const savedTypingVolume = localStorage.getItem("typingVolume") || "30";
+    const savedGameSoundVolume =
+      localStorage.getItem("gameSoundVolume") || "30";
+
+    // Set initial values
+    bgmVolumeSlider.value = savedBgmVolume;
+    bgmVolumeValue.textContent = savedBgmVolume + "%";
+    this.bgm.volume = parseInt(savedBgmVolume) / 100;
+
+    typingVolumeSlider.value = savedTypingVolume;
+    typingVolumeValue.textContent = savedTypingVolume + "%";
+
+    gameSoundVolumeSlider.value = savedGameSoundVolume;
+    gameSoundVolumeValue.textContent = savedGameSoundVolume + "%";
+
+    // Toggle settings menu
+    settingsHeader.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent event bubbling
+      settingsMenu.classList.toggle("expanded");
+    });
+
+    // Close settings menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!settingsMenu.contains(e.target)) {
+        settingsMenu.classList.remove("expanded");
+      }
+    });
+
+    // Sound toggle in menu
+    soundToggleInMenu.addEventListener("click", () => {
+      this.setMuted(!this.bgm.muted);
+    });
+
+    // BGM volume control
+    bgmVolumeSlider.addEventListener("input", (e) => {
+      const value = e.target.value;
+      bgmVolumeValue.textContent = value + "%";
+      this.bgm.volume = parseInt(value) / 100;
+      localStorage.setItem("bgmVolume", value);
+    });
+
+    // Typing sound volume control
+    typingVolumeSlider.addEventListener("input", (e) => {
+      const value = e.target.value;
+      typingVolumeValue.textContent = value + "%";
+      if (this.masterGain) {
+        this.masterGain.gain.value = parseInt(value) / 100;
+      }
+      localStorage.setItem("typingVolume", value);
+    });
+
+    // Game sound volume control
+    gameSoundVolumeSlider.addEventListener("input", (e) => {
+      const value = e.target.value;
+      gameSoundVolumeValue.textContent = value + "%";
+      this.gameSoundVolume = parseInt(value) / 100;
+
+      // Update all game sounds immediately with their base volumes
+      if (this.warningSound)
+        this.warningSound.volume = 0.5 * this.gameSoundVolume;
+      if (this.startSound) this.startSound.volume = 0.4 * this.gameSoundVolume;
+      if (this.endingSound)
+        this.endingSound.volume = 0.6 * this.gameSoundVolume;
+
+      localStorage.setItem("gameSoundVolume", value);
+    });
+
+    // Initialize sound toggle state
+    this.setMuted(this.bgm.muted);
   }
 
   // Time Preference System
@@ -1267,7 +1378,11 @@ class WordConstellation {
             window.webkitAudioContext)();
           this.masterGain = this.audioContext.createGain();
           this.masterGain.connect(this.audioContext.destination);
-          this.masterGain.gain.value = 0.3; // Overall volume for synesthetic sounds
+
+          // Set initial volume from localStorage
+          const savedTypingVolume =
+            localStorage.getItem("typingVolume") || "30";
+          this.masterGain.gain.value = parseInt(savedTypingVolume) / 100;
           console.log("Synesthetic audio initialized");
         } catch (error) {
           console.log("Audio context initialization failed:", error);
@@ -1323,9 +1438,9 @@ class WordConstellation {
       // ERROR ENVELOPE - Sharp attack, quick decay
       gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
       gainNode.gain.linearRampToValueAtTime(
-        0.6,
+        0.6 * this.gameSoundVolume,
         this.audioContext.currentTime + 0.01
-      ); // Sharp attack
+      ); // Sharp attack with game sound volume
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
         this.audioContext.currentTime + 0.3
@@ -1392,9 +1507,9 @@ class WordConstellation {
       // COMBO LOSS ENVELOPE - Gradual fade out like air escaping
       gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
       gainNode.gain.linearRampToValueAtTime(
-        0.4,
+        0.4 * this.gameSoundVolume,
         this.audioContext.currentTime + 0.05
-      ); // Gentle attack
+      ); // Gentle attack with game sound volume
       gainNode.gain.exponentialRampToValueAtTime(
         0.01,
         this.audioContext.currentTime + 0.8

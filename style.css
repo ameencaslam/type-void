@@ -2326,6 +2326,171 @@ body::before {
   }
 }
 
+/* Settings Menu */
+.settings-menu {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  font-family: "Space Mono", monospace;
+}
+
+.settings-menu.expanded {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 46, 0.9),
+    rgba(15, 15, 35, 0.9)
+  );
+  border: 1px solid rgba(64, 159, 255, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.settings-title {
+  font-size: 12px;
+  color: rgba(64, 159, 255, 0.8);
+  font-weight: 600;
+}
+
+.settings-toggle {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px;
+  transition: transform 0.3s ease;
+}
+
+.settings-menu:hover .settings-toggle {
+  transform: rotate(90deg);
+}
+
+.settings-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.settings-menu.expanded .settings-content {
+  max-height: 250px;
+  padding: 12px;
+  border-top: 1px solid rgba(64, 159, 255, 0.2);
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 15px;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  min-width: 80px;
+}
+
+.setting-toggle {
+  background: linear-gradient(135deg, #409fff, #0088cc);
+  border: none;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-width: 40px;
+}
+
+.setting-toggle.off {
+  background: linear-gradient(135deg, #666, #444);
+}
+
+.setting-toggle .toggle-off {
+  display: none;
+  color: #ccc;
+}
+
+.setting-toggle.off .toggle-on {
+  display: none;
+}
+
+.setting-toggle.off .toggle-off {
+  display: inline;
+}
+
+.setting-toggle .toggle-on {
+  color: #fff;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volume-slider {
+  width: 80px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  border-radius: 2px;
+  appearance: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #409fff, #0088cc);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #409fff, #0088cc);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.volume-value {
+  font-size: 10px;
+  color: rgba(64, 159, 255, 0.8);
+  min-width: 30px;
+  text-align: center;
+}
+
+@keyframes settingsMenuFade {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
 /* ESC hint at bottom of game screen */
 .esc-hint {
   position: fixed;
@@ -2338,7 +2503,6 @@ body::before {
   text-align: center;
   z-index: 10;
   pointer-events: none;
-  animation: escHintFade 1s ease-in-out 3s both;
 }
 
 @keyframes escHintFade {
