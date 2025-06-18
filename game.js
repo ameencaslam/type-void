@@ -7,6 +7,28 @@ class WordConstellation {
     // Audio elements
     this.bgm = document.getElementById("bgm");
     this.bgm.volume = 0.3; // Set initial volume to 30%
+    this.warningSound = document.getElementById("warningSound");
+    if (this.warningSound) {
+      this.warningSound.volume = 0.5;
+      this.warningSound.addEventListener("ended", () => {
+        if (this.isPlaying && !this.bgm.muted && this.bgm.paused) {
+          this.bgm.play().catch((e) => console.log("BGM resume failed", e));
+        }
+      });
+    }
+    this.startSound = document.getElementById("startSound");
+    if (this.startSound) this.startSound.volume = 0.4;
+    this.endingSound = document.getElementById("endingSound");
+    if (this.endingSound) {
+      this.endingSound.volume = 0.6;
+      this.endingSound.addEventListener("ended", () => {
+        // After the game-over sound, restart the BGM for the menu
+        if (!this.bgm.muted) {
+          this.bgm.currentTime = 0;
+          this.bgm.play().catch((e) => console.log("BGM resume failed", e));
+        }
+      });
+    }
 
     // Game state
     this.isPlaying = false;
@@ -61,12 +83,25 @@ class WordConstellation {
     this.soundOnIcon = this.soundToggle.querySelector(".sound-on");
     this.soundOffIcon = this.soundToggle.querySelector(".sound-off");
 
-    // Always mute on page load
-    this.setMuted(true);
+    // Mute based on saved preference, default to unmuted
+    const persistedMute = localStorage.getItem("soundMuted") === "1";
+    this.setMuted(persistedMute);
 
     this.soundToggle.addEventListener("click", () => {
       this.setMuted(!this.bgm.muted);
     });
+
+    // Try to play BGM on first interaction
+    const playBgmOnFirstInteraction = () => {
+      if (this.bgm.paused && !this.bgm.muted) {
+        this.bgm.play().catch((error) => {
+          console.log("Initial audio playback failed:", error);
+        });
+      }
+      // This listener should only ever run once.
+      document.removeEventListener("click", playBgmOnFirstInteraction);
+    };
+    document.addEventListener("click", playBgmOnFirstInteraction);
   }
 
   resizeCanvas() {
@@ -181,6 +216,24 @@ class WordConstellation {
     // Stop background music
     this.bgm.pause();
     this.bgm.currentTime = 0;
+
+    // Play ending sound
+    if (this.endingSound && !this.bgm.muted) {
+      this.endingSound.currentTime = 0;
+      this.endingSound
+        .play()
+        .catch((e) => console.log("Ending sound failed", e));
+    } else if (!this.bgm.muted) {
+      // If there's no ending sound, restart BGM immediately for the menu
+      this.bgm.currentTime = 0;
+      this.bgm.play().catch((e) => console.log("BGM resume failed", e));
+    }
+
+    // Stop warning sound if playing
+    if (this.warningSound) {
+      this.warningSound.pause();
+      this.warningSound.currentTime = 0;
+    }
 
     // Clear any dramatic timer effects immediately
     this.clearTimerEffects();
@@ -428,6 +481,14 @@ class WordConstellation {
         if (!this.timerWarningTriggered.critical) {
           this.timerWarningTriggered.critical = true;
           this.triggerDramaticError("timer_critical");
+          // Play warning sound
+          if (this.warningSound && !this.bgm.muted) {
+            this.bgm.pause();
+            this.warningSound.currentTime = 0;
+            this.warningSound
+              .play()
+              .catch((e) => console.log("Warning sound failed", e));
+          }
         }
       } else {
         timerElement.classList.remove("warning");
@@ -755,26 +816,6 @@ window.addEventListener("load", () => {
 // Initialize and start background music
 const bgm = document.getElementById("bgm");
 bgm.volume = 0.3; // Set initial volume to 30%
-
-// Try to start the music when the page loads
-document.addEventListener("DOMContentLoaded", () => {
-  bgm.play().catch((error) => {
-    console.log("Audio playback failed:", error);
-  });
-});
-
-// Also try to start on first user interaction
-document.addEventListener(
-  "click",
-  () => {
-    if (bgm.paused) {
-      bgm.play().catch((error) => {
-        console.log("Audio playback failed:", error);
-      });
-    }
-  },
-  { once: true }
-);
 
 // Landing Screen Functions
 function initializeLandingScreen() {
