@@ -54,6 +54,7 @@ class WordConstellation {
     this.typedText = "";
     this.wordQueue = [];
     this.wordsInRound = 0;
+    this.lastActionWasError = false;
 
     // Timing
     this.lastTime = 0;
@@ -228,6 +229,7 @@ class WordConstellation {
     this.typedText = "";
     this.wordQueue = [];
     this.wordsInRound = 0;
+    this.lastActionWasError = false;
     this.gameStartTime = Date.now();
     this.lastWordTime = Date.now();
     this.timerStarted = false;
@@ -429,6 +431,7 @@ class WordConstellation {
       }
 
       this.typedText += key;
+      this.lastActionWasError = false; // Reset error flag on successful typing
 
       // Check if word is complete
       if (this.typedText === this.currentWord.text.toLowerCase()) {
@@ -436,10 +439,11 @@ class WordConstellation {
       } else if (
         !this.currentWord.text.toLowerCase().startsWith(this.typedText)
       ) {
-        // Wrong letter - reset typing and lose combo
+        // Wrong letter - remove only the incorrect character and lose combo
         const lostCombo = this.combo;
-        this.typedText = "";
+        this.typedText = this.typedText.slice(0, -1); // Remove only the last (incorrect) character
         this.combo = 0;
+        this.lastActionWasError = true; // Flag to prevent animation on previous letter
 
         // SYNESTHETIC ERROR - Play harsh error sound with red visuals
         this.playErrorSound();
@@ -521,7 +525,8 @@ class WordConstellation {
           letterDiv.classList.add("typed");
 
           // Add "just-typed" class only to the most recently typed letter
-          if (i === typed.length - 1) {
+          // but not if the last action was an error correction
+          if (i === typed.length - 1 && !this.lastActionWasError) {
             letterDiv.classList.add("just-typed");
           }
 
