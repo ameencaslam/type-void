@@ -861,12 +861,26 @@ class WordConstellation {
       }
     });
 
-    // Add "MELODY" label
+    // Add "MELODY" label with frequency order info
     this.ctx.globalAlpha = 0.6;
     this.ctx.fillStyle = "rgba(64, 159, 255, 0.8)";
     this.ctx.font = '14px "Courier New", monospace';
     this.ctx.textAlign = "left";
-    this.ctx.fillText("MELODY:", melodyX, melodyY - 50);
+    this.ctx.fillText("MELODY (Frequency Order):", melodyX, melodyY - 50);
+
+    // Add frequency info for current notes
+    this.ctx.globalAlpha = 0.4;
+    this.ctx.font = '10px "Courier New", monospace';
+    if (this.currentMelody.length > 0) {
+      const latestNote = this.currentMelody[this.currentMelody.length - 1];
+      if (latestNote.frequency) {
+        this.ctx.fillText(
+          `${latestNote.frequency.toFixed(0)}Hz`,
+          melodyX,
+          melodyY + 35
+        );
+      }
+    }
 
     this.ctx.restore();
   }
@@ -1358,33 +1372,44 @@ class WordConstellation {
     this.melodyTimeouts.forEach((timeout) => clearTimeout(timeout));
     this.melodyTimeouts = [];
 
-    // Play each letter with slight delay to create melody
-    word
+    // Get letters with their frequencies and sort by frequency (low to high)
+    const lettersWithFreq = word
       .toLowerCase()
       .split("")
-      .forEach((letter, index) => {
-        const timeout = setTimeout(() => {
-          this.playLetterNote(letter, 0.4);
+      .map((letter, originalIndex) => ({
+        letter: letter,
+        frequency: this.letterFrequencies[letter] || 0,
+        originalIndex: originalIndex,
+        color: this.letterColors[letter],
+      }))
+      .sort((a, b) => a.frequency - b.frequency); // Sort by frequency (ascending)
 
-          // Create harmonic visual effect
-          this.createWaveformVisual(letter, 0.8);
+    // Play each letter in frequency order with slight delay
+    lettersWithFreq.forEach((letterData, sortedIndex) => {
+      const timeout = setTimeout(() => {
+        this.playLetterNote(letterData.letter, 0.4);
 
-          // Add to current melody visualization
-          this.currentMelody.push({
-            letter: letter,
-            color: this.letterColors[letter],
-            time: Date.now(),
-            position: index,
-          });
+        // Create harmonic visual effect
+        this.createWaveformVisual(letterData.letter, 0.8);
 
-          // Keep melody array manageable
-          if (this.currentMelody.length > 20) {
-            this.currentMelody.shift();
-          }
-        }, index * 100); // 100ms between notes
+        // Add to current melody visualization (show in frequency order)
+        this.currentMelody.push({
+          letter: letterData.letter,
+          color: letterData.color,
+          time: Date.now(),
+          position: sortedIndex, // Position in the sorted frequency order
+          originalPosition: letterData.originalIndex, // Original position in word
+          frequency: letterData.frequency,
+        });
 
-        this.melodyTimeouts.push(timeout);
-      });
+        // Keep melody array manageable
+        if (this.currentMelody.length > 20) {
+          this.currentMelody.shift();
+        }
+      }, sortedIndex * 100); // 100ms between notes in frequency order
+
+      this.melodyTimeouts.push(timeout);
+    });
   }
 
   clearSynestheticEffects() {
