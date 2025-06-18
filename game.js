@@ -133,6 +133,10 @@ class WordConstellation {
 
   setupTimeSelection() {
     const timeOptions = document.querySelectorAll(".time-option");
+
+    // Load saved time preference from cookies
+    const savedTime = this.loadTimePreference();
+
     timeOptions.forEach((option) => {
       option.addEventListener("click", () => {
         // Remove active class from all options
@@ -142,6 +146,10 @@ class WordConstellation {
         // Update game time
         this.gameTime = parseInt(option.dataset.time);
         this.timeLeft = this.gameTime;
+
+        // Save time preference to cookies
+        this.saveTimePreference(this.gameTime);
+
         // Update timer display if not playing
         if (!this.isPlaying) {
           document.getElementById(
@@ -152,8 +160,22 @@ class WordConstellation {
         this.updateHighScoreDisplay();
       });
     });
-    // Set default active option (60s)
-    timeOptions[2].classList.add("active");
+
+    // Set the saved time as active (or default to 60s)
+    const activeTime = savedTime || 60;
+    this.gameTime = activeTime;
+    this.timeLeft = this.gameTime;
+
+    // Find and activate the correct option
+    const activeOption = Array.from(timeOptions).find(
+      (option) => parseInt(option.dataset.time) === activeTime
+    );
+    if (activeOption) {
+      activeOption.classList.add("active");
+    } else {
+      // Fallback to 60s if saved time not found
+      timeOptions[2].classList.add("active");
+    }
   }
 
   startGame() {
@@ -806,6 +828,21 @@ class WordConstellation {
     }
     // Optionally, persist state
     localStorage.setItem("soundMuted", muted ? "1" : "0");
+  }
+
+  // Time Preference System
+  loadTimePreference() {
+    const saved = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("wordConstellationTimePreference="));
+    return saved ? parseInt(decodeURIComponent(saved.split("=")[1])) : null;
+  }
+
+  saveTimePreference(time) {
+    // Save for 1 year
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+    document.cookie = `wordConstellationTimePreference=${time}; expires=${expires.toUTCString()}; path=/`;
   }
 }
 
