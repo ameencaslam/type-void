@@ -66,6 +66,7 @@ class WordConstellation {
       critical: false,
       extreme: false,
     };
+    this.endingSoundPlayed = false;
 
     this.setupEventListeners();
     this.showInstructions();
@@ -184,10 +185,17 @@ class WordConstellation {
       critical: false,
       extreme: false,
     };
+    this.endingSoundPlayed = false;
 
     // Clear any error effects from previous game
     this.clearErrorEffects();
     this.clearTimerEffects();
+
+    // Clear blackout overlay classes from previous game
+    const blackoutOverlay = document.getElementById("blackoutOverlay");
+    if (blackoutOverlay) {
+      blackoutOverlay.classList.remove("fade-in", "fade-out");
+    }
 
     // Show all game elements again
     document.getElementById("header").style.display = "block";
@@ -216,18 +224,6 @@ class WordConstellation {
     // Stop background music
     this.bgm.pause();
     this.bgm.currentTime = 0;
-
-    // Play ending sound
-    if (this.endingSound && !this.bgm.muted) {
-      this.endingSound.currentTime = 0;
-      this.endingSound
-        .play()
-        .catch((e) => console.log("Ending sound failed", e));
-    } else if (!this.bgm.muted) {
-      // If there's no ending sound, restart BGM immediately for the menu
-      this.bgm.currentTime = 0;
-      this.bgm.play().catch((e) => console.log("BGM resume failed", e));
-    }
 
     // Stop warning sound if playing
     if (this.warningSound) {
@@ -521,6 +517,19 @@ class WordConstellation {
     // Update timer only if it has started (user has started typing)
     if (this.timerStarted) {
       this.timeLeft -= deltaTime / 1000;
+
+      // Play ending sound when 1 second left
+      if (this.timeLeft <= 1.5 && !this.endingSoundPlayed) {
+        this.endingSoundPlayed = true;
+        if (this.endingSound && !this.bgm.muted) {
+          this.bgm.pause();
+          this.endingSound.currentTime = 0;
+          this.endingSound
+            .play()
+            .catch((e) => console.log("Ending sound failed", e));
+        }
+      }
+
       if (this.timeLeft <= 0) {
         this.endGame();
         return;
@@ -873,6 +882,12 @@ function generateParticles() {
 }
 
 function startFromLanding() {
+  // Play start sound immediately on click
+  if (game && game.startSound && !game.bgm.muted) {
+    game.startSound.currentTime = 0;
+    game.startSound.play().catch((e) => console.log("Start sound failed", e));
+  }
+
   const landingScreen = document.getElementById("landingScreen");
   const gameContainer = document.getElementById("gameContainer");
 
@@ -1005,6 +1020,11 @@ document.head.appendChild(style);
 
 // Expose startGame function globally for the play again button
 function startGame() {
+  // Play start sound immediately on click
+  if (game && game.startSound && !game.bgm.muted) {
+    game.startSound.currentTime = 0;
+    game.startSound.play().catch((e) => console.log("Start sound failed", e));
+  }
   game.startGame();
 }
 
