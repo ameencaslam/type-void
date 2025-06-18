@@ -666,11 +666,7 @@ class WordConstellation {
       }
     }
 
-    // Clean up old melody entries
-    const now = Date.now();
-    this.currentMelody = this.currentMelody.filter(
-      (note) => now - note.time < 5000
-    );
+    // Melody timeouts are cleaned up automatically
   }
 
   render() {
@@ -702,9 +698,6 @@ class WordConstellation {
 
     // Render letter trails
     this.renderLetterTrails();
-
-    // Render melody visualization
-    this.renderMelodyVisualization();
   }
 
   renderHarmonicVisuals() {
@@ -1199,7 +1192,6 @@ class WordConstellation {
     this.harmonicVisuals = [];
 
     // Word melody system
-    this.currentMelody = [];
     this.melodyTimeouts = [];
   }
 
@@ -1391,21 +1383,6 @@ class WordConstellation {
 
         // Create harmonic visual effect
         this.createWaveformVisual(letterData.letter, 0.8);
-
-        // Add to current melody visualization (show in frequency order)
-        this.currentMelody.push({
-          letter: letterData.letter,
-          color: letterData.color,
-          time: Date.now(),
-          position: sortedIndex, // Position in the sorted frequency order
-          originalPosition: letterData.originalIndex, // Original position in word
-          frequency: letterData.frequency,
-        });
-
-        // Keep melody array manageable
-        if (this.currentMelody.length > 20) {
-          this.currentMelody.shift();
-        }
       }, sortedIndex * 100); // 100ms between notes in frequency order
 
       this.melodyTimeouts.push(timeout);
