@@ -441,6 +441,14 @@ class WordConstellation {
         this.typedText = "";
         this.combo = 0;
 
+        // SYNESTHETIC ERROR - Play harsh error sound with red visuals
+        this.playErrorSound();
+
+        // SYNESTHETIC COMBO LOSS - Also play combo loss sound if combo was lost
+        if (lostCombo > 0) {
+          this.playComboLossSound();
+        }
+
         // Trigger dramatic error for wrong letter (only once per wrong letter)
         this.triggerDramaticError("wrong_letter");
 
@@ -611,8 +619,8 @@ class WordConstellation {
     if (this.timerStarted) {
       this.timeLeft -= deltaTime / 1000;
 
-      // Play ending sound when 1 second left
-      if (this.timeLeft <= 1.5 && !this.endingSoundPlayed) {
+      // Play ending sound when 3 seconds left
+      if (this.timeLeft <= 2.0 && !this.endingSoundPlayed) {
         this.endingSoundPlayed = true;
         if (this.endingSound && !this.bgm.muted) {
           this.bgm.pause();
@@ -637,6 +645,10 @@ class WordConstellation {
     ) {
       const lostCombo = this.combo;
       this.combo = 0;
+
+      // SYNESTHETIC COMBO LOSS - Play deflating sound with orange visuals
+      this.playComboLossSound();
+
       if (lostCombo >= 2) {
         this.showComboLoss(lostCombo);
       }
@@ -1252,6 +1264,139 @@ class WordConstellation {
     document.addEventListener("keydown", initAudio);
   }
 
+  playErrorSound() {
+    if (!this.audioContext || this.bgm.muted) {
+      return;
+    }
+
+    try {
+      // Create harsh, dissonant error sound
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      // Connect audio nodes
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      // ERROR SOUND DESIGN - Harsh, low frequency burst
+      oscillator.frequency.setValueAtTime(
+        80, // Low, menacing frequency
+        this.audioContext.currentTime
+      );
+      oscillator.type = "sawtooth"; // Harsh sawtooth wave
+
+      // Add frequency modulation for harshness
+      const modOsc = this.audioContext.createOscillator();
+      const modGain = this.audioContext.createGain();
+      modOsc.frequency.value = 8; // 8Hz modulation
+      modGain.gain.value = 30; // Modulation depth
+      modOsc.connect(modGain);
+      modGain.connect(oscillator.frequency);
+
+      // Distortion filter
+      const distortionFilter = this.audioContext.createBiquadFilter();
+      distortionFilter.type = "lowpass";
+      distortionFilter.frequency.value = 150; // Cut high frequencies for bass thud
+      distortionFilter.Q.value = 5; // High resonance for harshness
+
+      // Connect through filter
+      oscillator.connect(distortionFilter);
+      distortionFilter.connect(gainNode);
+
+      // ERROR ENVELOPE - Sharp attack, quick decay
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.6,
+        this.audioContext.currentTime + 0.01
+      ); // Sharp attack
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.audioContext.currentTime + 0.3
+      ); // Quick decay
+
+      // Start modulation and main oscillator
+      modOsc.start(this.audioContext.currentTime);
+      modOsc.stop(this.audioContext.currentTime + 0.3);
+
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.3);
+
+      // Create red visual effect for error
+      this.createErrorVisual();
+    } catch (error) {
+      console.log("Error playing error sound:", error);
+    }
+  }
+
+  playComboLossSound() {
+    if (!this.audioContext || this.bgm.muted) {
+      return;
+    }
+
+    try {
+      // Create deflating, descending combo loss sound
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      // Connect audio nodes
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      // COMBO LOSS SOUND DESIGN - Descending "deflation" sound
+      oscillator.frequency.setValueAtTime(
+        200, // Start higher than error sound
+        this.audioContext.currentTime
+      );
+      // Descend to low frequency over time
+      oscillator.frequency.exponentialRampToValueAtTime(
+        50,
+        this.audioContext.currentTime + 0.8
+      );
+      oscillator.type = "triangle"; // Softer than sawtooth but still noticeable
+
+      // Add gentle vibrato for "deflating" feel
+      const vibratoOsc = this.audioContext.createOscillator();
+      const vibratoGain = this.audioContext.createGain();
+      vibratoOsc.frequency.value = 4; // Slow vibrato
+      vibratoGain.gain.value = 8; // Gentle modulation
+      vibratoOsc.connect(vibratoGain);
+      vibratoGain.connect(oscillator.frequency);
+
+      // Gentle lowpass filter
+      const filter = this.audioContext.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 400;
+      filter.Q.value = 1;
+
+      // Connect through filter
+      oscillator.connect(filter);
+      filter.connect(gainNode);
+
+      // COMBO LOSS ENVELOPE - Gradual fade out like air escaping
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        0.4,
+        this.audioContext.currentTime + 0.05
+      ); // Gentle attack
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.audioContext.currentTime + 0.8
+      ); // Long deflating decay
+
+      // Start vibrato and main oscillator
+      vibratoOsc.start(this.audioContext.currentTime);
+      vibratoOsc.stop(this.audioContext.currentTime + 0.8);
+
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.8);
+
+      // Create orange/yellow visual effect for combo loss (warning color)
+      this.createComboLossVisual();
+    } catch (error) {
+      console.log("Error playing combo loss sound:", error);
+    }
+  }
+
   playLetterNote(letter, duration = 0.3) {
     if (
       !this.audioContext ||
@@ -1389,6 +1534,80 @@ class WordConstellation {
       maxLife: 2.0,
       createdAt: Date.now(),
     });
+  }
+
+  createErrorVisual() {
+    // Create aggressive red visual effects for errors
+    const redColor = { h: 0, s: 100, l: 50 }; // Pure red
+
+    // Create error harmonic visual
+    this.harmonicVisuals.push({
+      letter: "ERROR",
+      color: redColor,
+      frequency: 80, // Low frequency matching the error sound
+      amplitude: 2.0, // Extra intensity
+      phase: 0,
+      life: 1.0,
+      maxLife: 1.5,
+      createdAt: Date.now(),
+    });
+
+    // Create multiple red particles for dramatic effect
+    const canvas = document.getElementById("gameCanvas");
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    for (let i = 0; i < 15; i++) {
+      this.letterTrails.push({
+        x: centerX + (Math.random() - 0.5) * 200,
+        y: centerY + (Math.random() - 0.5) * 200,
+        vx: (Math.random() - 0.5) * 8,
+        vy: (Math.random() - 0.5) * 8,
+        life: 1.0,
+        maxLife: 1.0,
+        color: redColor,
+        size: Math.random() * 12 + 8,
+        letter: "ERROR",
+        createdAt: Date.now(),
+      });
+    }
+  }
+
+  createComboLossVisual() {
+    // Create orange/yellow warning visual effects for combo loss
+    const warningColor = { h: 30, s: 100, l: 60 }; // Orange-yellow warning color
+
+    // Create combo loss harmonic visual - descending frequency
+    this.harmonicVisuals.push({
+      letter: "COMBO_LOST",
+      color: warningColor,
+      frequency: 200, // Start high, will visually "deflate"
+      amplitude: 1.5,
+      phase: 0,
+      life: 1.0,
+      maxLife: 2.0, // Longer than error for deflating effect
+      createdAt: Date.now(),
+    });
+
+    // Create deflating particle effect - particles fall down like air escaping
+    const canvas = document.getElementById("gameCanvas");
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    for (let i = 0; i < 20; i++) {
+      this.letterTrails.push({
+        x: centerX + (Math.random() - 0.5) * 150,
+        y: centerY + (Math.random() - 0.5) * 100,
+        vx: (Math.random() - 0.5) * 3, // Slower horizontal movement
+        vy: Math.random() * 2 + 1, // Downward drift (deflating)
+        life: 1.0,
+        maxLife: 1.5, // Longer life for deflating effect
+        color: warningColor,
+        size: Math.random() * 10 + 6,
+        letter: "COMBO",
+        createdAt: Date.now(),
+      });
+    }
   }
 
   playWordMelody(word) {
