@@ -520,21 +520,33 @@ class WordConstellation {
         if (i < typed.length) {
           letterDiv.classList.add("typed");
 
-          // Add synesthetic color for typed letters
+          // Add "just-typed" class only to the most recently typed letter
+          if (i === typed.length - 1) {
+            letterDiv.classList.add("just-typed");
+          }
+
+          // Add subtle synesthetic color tinting to text
           const letterColor = this.letterColors[word[i].toLowerCase()];
           if (letterColor) {
-            letterDiv.style.backgroundColor = `hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
-            letterDiv.style.color = "#ffffff";
-            letterDiv.style.boxShadow = `0 0 15px hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
+            // Subtle color tint by mixing the letter color with white
+            const tintedColor = `hsl(${letterColor.h}, ${Math.min(
+              letterColor.s,
+              40
+            )}%, ${Math.max(letterColor.l, 85)}%)`;
+            letterDiv.style.color = tintedColor;
           }
         } else if (i === typed.length) {
           letterDiv.classList.add("current");
 
-          // Add preview color for current letter
+          // Add subtle color preview for current letter
           const letterColor = this.letterColors[word[i].toLowerCase()];
           if (letterColor) {
-            letterDiv.style.borderColor = `hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
-            letterDiv.style.boxShadow = `0 0 20px hsl(${letterColor.h}, ${letterColor.s}%, ${letterColor.l}%)`;
+            // Very subtle color tint for the upcoming letter
+            const previewColor = `hsl(${letterColor.h}, ${Math.min(
+              letterColor.s,
+              20
+            )}%, ${Math.max(letterColor.l, 90)}%)`;
+            letterDiv.style.color = previewColor;
           }
         } else {
           letterDiv.classList.add("pending");

@@ -389,6 +389,9 @@ body {
   border-color: #409fff;
   transform: scale(0.95);
   box-shadow: 0 0 10px rgba(64, 159, 255, 0.4);
+}
+
+#wordDisplay .letter.just-typed {
   animation: letterComplete 0.3s ease-out;
 }
 
