@@ -117,6 +117,32 @@ class WordConstellation {
     window.addEventListener("resize", () => this.resizeCanvas());
 
     document.addEventListener("keydown", (e) => {
+      // Check if we're on the landing screen
+      const landingScreen = document.getElementById("landingScreen");
+      const isOnLandingScreen =
+        landingScreen && landingScreen.style.display !== "none";
+
+      if (isOnLandingScreen) {
+        if (e.code === "Enter") {
+          e.preventDefault();
+          startFromLanding(); // Use the existing landing transition function
+        }
+        return;
+      }
+
+      // Check if we're on the game over screen
+      const gameOverScreen = document.getElementById("gameOver");
+      const isOnGameOverScreen =
+        gameOverScreen && !gameOverScreen.classList.contains("hidden");
+
+      if (isOnGameOverScreen) {
+        if (e.code === "Enter") {
+          e.preventDefault();
+          startGame(); // Use the existing play again function
+        }
+        return;
+      }
+
       if (!this.isPlaying) {
         if (e.code === "Space") {
           e.preventDefault();
