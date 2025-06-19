@@ -592,9 +592,16 @@ class WordConstellation {
     // Add warning class and dramatic effects when time is low (only if timer started)
     if (this.timerStarted) {
       const timeLeft = Math.ceil(this.timeLeft);
-      if (timeLeft <= 5) {
-        // Timer critical - glitch effects only
+
+      // Timer warning pulsing starts at 10 seconds
+      if (timeLeft <= 10) {
         timerElement.classList.add("warning");
+      } else {
+        timerElement.classList.remove("warning");
+      }
+
+      // Timer critical effects (glitch) start at 5 seconds
+      if (timeLeft <= 5) {
         if (!this.timerWarningTriggered.critical) {
           this.timerWarningTriggered.critical = true;
           this.triggerDramaticError("timer_critical");
@@ -607,16 +614,17 @@ class WordConstellation {
               .catch((e) => console.log("Warning sound failed", e));
           }
         }
-      } else {
-        timerElement.classList.remove("warning");
-        // Clear timer-specific effects when time is not critical
+      } else if (timeLeft > 10) {
+        // Clear timer-specific effects and reset flags only when above 10 seconds
         this.clearTimerEffects();
-        // Reset warning flags when timer is not in warning state
         this.timerWarningTriggered = {
           warning: false,
           critical: false,
           extreme: false,
         };
+      } else if (timeLeft > 5) {
+        // Between 6-10 seconds: keep pulsing but clear glitch effects
+        this.clearTimerEffects();
       }
     } else {
       // Remove any warning states when timer hasn't started
