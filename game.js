@@ -267,6 +267,7 @@ class WordConstellation {
     document.getElementById("highScoreContainer").style.display = "block";
     document.getElementById("timeSelection").style.display = "flex";
     document.getElementById("settingsMenu").style.display = "block";
+    document.getElementById("tutorialButton").style.display = "block";
     document.getElementById("timeSelection").classList.remove("disabled");
     document.getElementById("gameOver").style.display = "none";
     document.getElementById("gameOver").classList.add("hidden");
@@ -346,6 +347,7 @@ class WordConstellation {
       document.getElementById("highScoreContainer").style.display = "none";
       document.getElementById("timeSelection").style.display = "none";
       document.getElementById("settingsMenu").style.display = "none";
+      document.getElementById("tutorialButton").style.display = "none";
       document.getElementById("gameOver").style.display = "flex";
       document.getElementById("gameOver").classList.remove("hidden");
 
@@ -2116,6 +2118,15 @@ function openTutorial() {
 function closeTutorial() {
   const tutorialOverlay = document.getElementById("tutorialOverlay");
   tutorialOverlay.classList.add("hidden");
+
+  // Reset tutorial to beginning when closed
+  currentTutorialStep = 0;
+  // Hide all steps
+  document.querySelectorAll(".tutorial-step").forEach((step) => {
+    step.classList.remove("active");
+  });
+  showTutorialStep(0);
+  updateTutorialProgress();
 }
 
 function nextTutorialStep() {
