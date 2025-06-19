@@ -88,18 +88,9 @@ class WordConstellation {
       wordContainer.style.display = "none";
     }
 
-    // Sound toggle logic
-    this.soundToggle = document.getElementById("soundToggle");
-    this.soundOnIcon = this.soundToggle.querySelector(".sound-on");
-    this.soundOffIcon = this.soundToggle.querySelector(".sound-off");
-
     // Mute based on saved preference, default to unmuted
     const persistedMute = localStorage.getItem("soundMuted") === "1";
     this.setMuted(persistedMute);
-
-    this.soundToggle.addEventListener("click", () => {
-      this.setMuted(!this.bgm.muted);
-    });
 
     // Settings menu functionality
     this.setupSettingsMenu();
@@ -1167,13 +1158,6 @@ class WordConstellation {
 
   setMuted(muted) {
     this.bgm.muted = muted;
-    if (muted) {
-      this.soundOnIcon.style.display = "none";
-      this.soundOffIcon.style.display = "inline";
-    } else {
-      this.soundOnIcon.style.display = "inline";
-      this.soundOffIcon.style.display = "none";
-    }
 
     // Update settings menu toggle
     const menuToggle = document.getElementById("soundToggleInMenu");
@@ -1873,12 +1857,6 @@ function startFromLanding() {
   const landingScreen = document.getElementById("landingScreen");
   const gameContainer = document.getElementById("gameContainer");
 
-  // Hide the sound toggle once we leave the landing page
-  const soundToggleButton = document.getElementById("soundToggle");
-  if (soundToggleButton) {
-    soundToggleButton.style.display = "none";
-  }
-
   // Clear any error effects before transitioning
   if (game) {
     game.clearErrorEffects();
@@ -2024,12 +2002,6 @@ function returnToLanding() {
   setTimeout(() => {
     gameContainer.style.display = "none";
     landingScreen.style.display = "flex";
-
-    // Show the sound toggle again on the landing page
-    const soundToggleButton = document.getElementById("soundToggle");
-    if (soundToggleButton) {
-      soundToggleButton.style.display = "flex";
-    }
 
     landingScreen.style.animation =
       "landingScreenReturn 0.8s ease-out forwards";

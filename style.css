@@ -2270,53 +2270,6 @@ body::before {
   transform: scale(1.05);
 }
 
-/* Sound Toggle Button */
-.sound-toggle {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 10000;
-  background: rgba(26, 26, 46, 0.7);
-  border: 1.5px solid rgba(64, 159, 255, 0.25);
-  border-radius: 50%;
-  box-shadow: 0 2px 12px rgba(64, 159, 255, 0.08);
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s, border 0.2s, box-shadow 0.2s;
-  backdrop-filter: blur(6px);
-  outline: none;
-}
-.sound-toggle:hover,
-.sound-toggle:focus {
-  background: rgba(64, 159, 255, 0.12);
-  border-color: rgba(64, 159, 255, 0.5);
-  box-shadow: 0 4px 16px rgba(64, 159, 255, 0.13);
-}
-.sound-toggle svg {
-  display: block;
-  fill: #409fff;
-  opacity: 0.85;
-  transition: fill 0.2s, opacity 0.2s;
-}
-.sound-toggle .sound-off svg {
-  fill: #888fa7;
-  opacity: 0.7;
-}
-@media (max-width: 600px) {
-  .sound-toggle {
-    bottom: 12px;
-    right: 12px;
-    padding: 7px;
-  }
-  .sound-toggle svg {
-    width: 22px;
-    height: 22px;
-  }
-}
-
 .time-selection.disabled {
   pointer-events: none;
   opacity: 0.5;
