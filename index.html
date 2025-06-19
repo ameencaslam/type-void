@@ -254,8 +254,339 @@
         </div>
       </div>
 
-      <!-- ESC hint at bottom of game screen -->
-      <div id="escHint" class="esc-hint">Press ESC to exit</div>
+      <!-- Tutorial Button -->
+      <div id="tutorialButton" class="tutorial-button">
+        <button onclick="openTutorial()">
+          <span class="tutorial-icon">?</span>
+          <span class="tutorial-text">TUTORIAL</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay hidden">
+      <div class="tutorial-content">
+        <div class="tutorial-header">
+          <h2>VOID INITIATION SEQUENCE</h2>
+          <button class="tutorial-close" onclick="closeTutorial()">×</button>
+        </div>
+
+        <div class="tutorial-body">
+          <div class="tutorial-step active" data-step="0">
+            <div class="tutorial-explanation">
+              <h3>Welcome to the Void</h3>
+              <p>
+                Type Void is a synesthetic typing experience where each letter
+                creates unique sounds and visuals. Let's explore the interface.
+              </p>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Begin Journey
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="1">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-timer">
+                <div class="demo-timer-display">Time: 60s</div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Timer (Top Left)</h3>
+              <ul>
+                <li><strong>Shows remaining time</strong></li>
+                <li><strong>Glows red when critical</strong></li>
+                <li><strong>Game ends when it reaches zero</strong></li>
+              </ul>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="2">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-score">
+                <div class="demo-score-display">Score: 1,250</div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Score (Top Right)</h3>
+              <ul>
+                <li><strong>Your current points</strong></li>
+                <li><strong>Increases with speed and combo bonuses</strong></li>
+                <li><strong>Updates in real-time</strong></li>
+              </ul>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="3">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-high-score">
+                <div class="demo-high-score-display">High Score: 2,480</div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>High Score (Bottom Right)</h3>
+              <ul>
+                <li><strong>Best score for selected time duration</strong></li>
+                <li><strong>Saved automatically</strong></li>
+                <li><strong>Different for each time setting</strong></li>
+              </ul>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="4">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-time-selection">
+                <div class="demo-time-options">
+                  <div class="demo-time-option">15s</div>
+                  <div class="demo-time-option active">30s</div>
+                  <div class="demo-time-option">60s</div>
+                  <div class="demo-time-option">2m</div>
+                </div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Time Selection (Bottom Left)</h3>
+              <ul>
+                <li><strong>Choose your challenge duration</strong></li>
+                <li><strong>Click to select before starting</strong></li>
+                <li><strong>Disabled during gameplay</strong></li>
+              </ul>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="5">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-combo">
+                <div class="demo-combo-counter">5x</div>
+                <div class="demo-pointer"></div>
+              </div>
+
+              <div class="demo-element demo-combo-lost">
+                <div class="demo-combo-lost-display">
+                  <div class="demo-combo-lost-text">COMBO LOST</div>
+                </div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Combo System & Scoring</h3>
+              <ul>
+                <li>
+                  <strong
+                    >Complete words correctly to build combo multiplier</strong
+                  >
+                </li>
+                <li><strong>3x = Cyan, 5x = Purple, 10x = Gold</strong></li>
+                <li><strong>Higher combos = more points per word</strong></li>
+                <li>
+                  <strong>Wrong letters or pauses break your streak</strong>
+                </li>
+              </ul>
+              <div class="demo-combo-showcase">
+                <button onclick="demoComboEffect(3)">Demo 3x Combo</button>
+                <button onclick="demoComboEffect(5)">Demo 5x Combo</button>
+                <button onclick="demoComboEffect(10)">Demo 10x Combo</button>
+                <button onclick="demoComboLoss()">Demo Combo Loss</button>
+              </div>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="6">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-word-container">
+                <div class="demo-word-label">Type this word:</div>
+                <div class="demo-word-display">
+                  <div class="demo-letter typed">V</div>
+                  <div class="demo-letter typed">O</div>
+                  <div class="demo-letter current">I</div>
+                  <div class="demo-letter pending">D</div>
+                </div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Typing & Effects</h3>
+              <ul>
+                <li>
+                  <strong>Each letter creates unique sounds and colors</strong>
+                </li>
+                <li>
+                  <strong>Dramatic effects for errors and warnings</strong>
+                </li>
+                <li>
+                  <strong>Speed bonus rewards faster typing</strong>
+                </li>
+              </ul>
+              <div class="demo-synesthetic">
+                <p>
+                  Try typing:
+                  <span class="demo-key" onclick="playDemoSound('v')">V</span>
+                  <span class="demo-key" onclick="playDemoSound('o')">O</span>
+                  <span class="demo-key" onclick="playDemoSound('i')">I</span>
+                  <span class="demo-key" onclick="playDemoSound('d')">D</span>
+                </p>
+                <p class="demo-instruction">
+                  Click the letters above to hear their unique sounds!
+                </p>
+              </div>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="7">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-scoring">
+                <div class="demo-scoring-formula">
+                  <div class="formula-title">Score Formula</div>
+                  <div class="formula-equation">
+                    Base Points × Speed Bonus × Combo Multiplier
+                  </div>
+                  <div class="formula-example">
+                    Example: 50 × 2.1 × 1.5 = 157 points
+                  </div>
+                </div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Point Calculation</h3>
+              <ul>
+                <li>
+                  <strong>Base Points:</strong> Varies by word difficulty (Easy:
+                  10-30, Medium: 40-70, Hard: 80-150)
+                </li>
+                <li>
+                  <strong>Speed Bonus:</strong> Up to 3x for typing words
+                  quickly (under 1 second)
+                </li>
+                <li>
+                  <strong>Combo Multiplier:</strong> Up to 3x based on your
+                  current streak
+                </li>
+                <li>
+                  <strong>Final Score:</strong> All bonuses multiply together
+                  for maximum points
+                </li>
+              </ul>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="8">
+            <div class="tutorial-demo-container">
+              <div class="demo-element demo-settings">
+                <div class="demo-settings-menu">
+                  <div class="demo-settings-header">⚙️ Settings</div>
+                  <div class="demo-setting-item">
+                    <span>Sound</span>
+                    <div class="demo-toggle on">ON</div>
+                  </div>
+                  <div class="demo-setting-item">
+                    <span>BGM Volume</span>
+                    <div class="demo-volume-slider">
+                      <div class="demo-volume-fill"></div>
+                    </div>
+                    <span>30%</span>
+                  </div>
+                </div>
+                <div class="demo-pointer"></div>
+              </div>
+            </div>
+
+            <div class="tutorial-explanation">
+              <h3>Settings Menu</h3>
+              <ul>
+                <li><strong>Sound Toggle:</strong> Turn all sounds on/off</li>
+                <li><strong>BGM Volume:</strong> Background music level</li>
+                <li>
+                  <strong>Typing Sound Volume:</strong> Letter sound effects
+                </li>
+                <li>
+                  <strong>Game Sound Volume:</strong> UI and effect sounds
+                </li>
+              </ul>
+              <p class="settings-note">
+                Access settings via the gear icon at the bottom center during
+                gameplay.
+              </p>
+              <button class="tutorial-next" onclick="nextTutorialStep()">
+                Continue
+              </button>
+            </div>
+          </div>
+
+          <div class="tutorial-step" data-step="9">
+            <div class="tutorial-explanation final-step">
+              <h3>Ready for the Void</h3>
+              <p>
+                You've learned the fundamentals of Type Void's synesthetic
+                typing system. The void awaits your keystrokes to create music,
+                light, and cosmic harmony.
+              </p>
+              <div class="tutorial-final-tips">
+                <h4>Pro Tips:</h4>
+                <ul>
+                  <li>Press ESC during gameplay to end the game instantly</li>
+                  <li>Watch for visual trails that follow your typing</li>
+                  <li>Build combos for maximum scoring potential</li>
+                  <li>Use the settings menu to adjust audio levels</li>
+                </ul>
+              </div>
+              <div class="tutorial-final-actions">
+                <button
+                  class="tutorial-start-game"
+                  onclick="startGameFromTutorial()"
+                >
+                  Enter the Void
+                </button>
+                <button class="tutorial-replay" onclick="restartTutorial()">
+                  Replay Tutorial
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-progress">
+          <div class="tutorial-progress-bar">
+            <div class="tutorial-progress-fill"></div>
+          </div>
+          <div class="tutorial-step-indicator">
+            <span class="tutorial-current-step">1</span> /
+            <span class="tutorial-total-steps">10</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="words.js"></script>

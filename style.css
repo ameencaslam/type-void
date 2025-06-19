@@ -2306,7 +2306,7 @@ body::before {
 /* Settings Menu */
 .settings-menu {
   position: fixed;
-  bottom: 60px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 15;
@@ -2468,27 +2468,767 @@ body::before {
   }
 }
 
-/* ESC hint at bottom of game screen */
-.esc-hint {
+/* Tutorial Button */
+.tutorial-button {
   position: fixed;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: "Space Mono", monospace;
-  font-size: 12px;
-  color: rgba(64, 159, 255, 0.8);
-  text-align: center;
-  z-index: 10;
-  pointer-events: none;
+  z-index: 100;
 }
 
-@keyframes escHintFade {
+.tutorial-button button {
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
+  border: 2px solid rgba(64, 159, 255, 0.6);
+  color: #ffffff;
+  padding: 8px 16px;
+  font-size: 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 8px #409fff;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tutorial-button button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 30px rgba(64, 159, 255, 0.6);
+  border-color: rgba(64, 159, 255, 1);
+}
+
+.tutorial-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Tutorial Overlay */
+.tutorial-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 15, 35, 0.95) 0%,
+    rgba(10, 10, 10, 0.98) 100%
+  );
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px);
+}
+
+.tutorial-overlay.hidden {
+  display: none;
+}
+
+.tutorial-content {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 46, 0.95),
+    rgba(15, 15, 35, 0.95),
+    rgba(10, 10, 10, 0.95)
+  );
+  border: 2px solid rgba(64, 159, 255, 0.6);
+  border-radius: 25px;
+  max-width: 900px;
+  max-height: 90vh;
+  width: 90vw;
+  padding: 30px;
+  box-shadow: 0 0 50px rgba(64, 159, 255, 0.3);
+  backdrop-filter: blur(15px);
+  overflow: hidden;
+  position: relative;
+}
+
+.tutorial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(64, 159, 255, 0.3);
+}
+
+.tutorial-header h2 {
+  color: #409fff;
+  font-size: 2.2em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 20px #409fff;
+  margin: 0;
+}
+
+.tutorial-close {
+  background: none;
+  border: 2px solid rgba(255, 68, 68, 0.6);
+  color: #ff4444;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tutorial-close:hover {
+  background: rgba(255, 68, 68, 0.2);
+  border-color: #ff4444;
+  transform: scale(1.1);
+}
+
+.tutorial-body {
+  height: 500px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+/* Custom Scrollbar for Tutorial */
+.tutorial-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tutorial-body::-webkit-scrollbar-track {
+  background: rgba(15, 15, 35, 0.8);
+  border-radius: 4px;
+}
+
+.tutorial-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #409fff, #6dd5ed);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(64, 159, 255, 0.3);
+}
+
+.tutorial-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #6dd5ed, #409fff);
+  box-shadow: 0 0 15px rgba(64, 159, 255, 0.5);
+}
+
+/* Firefox scrollbar styling */
+.tutorial-body {
+  scrollbar-width: thin;
+  scrollbar-color: #409fff rgba(15, 15, 35, 0.8);
+}
+
+.tutorial-step {
+  display: none;
+  animation: tutorialStepFadeIn 0.5s ease-out;
+}
+
+.tutorial-step.active {
+  display: block;
+}
+
+@keyframes tutorialStepFadeIn {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Demo Container */
+.tutorial-demo-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+  min-height: 200px;
+}
+
+.demo-element {
+  position: relative;
+  padding: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(64, 159, 255, 0.1),
+    rgba(10, 10, 10, 0.8)
+  );
+  border: 2px solid rgba(64, 159, 255, 0.4);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-pointer {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #409fff;
+  animation: demoPointerPulse 2s ease-in-out infinite;
+}
+
+@keyframes demoPointerPulse {
+  0%,
+  100% {
+    opacity: 0.6;
     transform: translateX(-50%) translateY(0);
   }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* Demo Element Styles */
+.demo-timer-display,
+.demo-score-display,
+.demo-high-score-display {
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
+  color: #ffffff;
+  font-size: 1.2em;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(64, 159, 255, 0.6);
+  box-shadow: 0 0 20px rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 15px #409fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: voidTimerPulse 3s ease-in-out infinite;
+}
+
+.demo-timer-warning-display.warning {
+  background: linear-gradient(135deg, #ff2444, #cc0000, #0a0a0a);
+  border-color: #ff2444;
+  box-shadow: 0 0 30px rgba(255, 36, 68, 0.7);
+  animation: voidTimerWarning 0.6s ease-in-out infinite;
+}
+
+.demo-time-options {
+  display: flex;
+  gap: 8px;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid rgba(64, 159, 255, 0.6);
+  box-shadow: 0 0 20px rgba(64, 159, 255, 0.3);
+}
+
+.demo-time-option {
+  background: rgba(26, 26, 46, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(64, 159, 255, 0.2);
+  min-width: 40px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.demo-time-option.active {
+  background: linear-gradient(135deg, #409fff, #1e40af);
+  color: #ffffff;
+  border-color: rgba(64, 159, 255, 0.8);
+  box-shadow: 0 0 10px rgba(64, 159, 255, 0.4);
+  text-shadow: 0 0 8px rgba(64, 159, 255, 0.8);
+}
+
+.demo-word-container {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 10, 0.9),
+    rgba(26, 26, 46, 0.8),
+    rgba(15, 15, 35, 0.9)
+  );
+  border: 2px solid rgba(64, 159, 255, 0.6);
+  border-radius: 25px;
+  padding: 30px;
+  backdrop-filter: blur(15px);
+  text-align: center;
+}
+
+.demo-word-label {
+  font-size: 0.9em;
+  color: #409fff;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: bold;
+  text-shadow: 0 0 10px #409fff;
+}
+
+.demo-word-display {
+  font-family: "Consolas", "Monaco", monospace;
+  font-size: 2.5em;
+  font-weight: bold;
+  letter-spacing: 4px;
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+.demo-letter {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 8px;
+  min-width: 20px;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.demo-letter.typed {
+  background: linear-gradient(135deg, #409fff, #1e40af);
+  color: #ffffff;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+  border-color: #409fff;
+  box-shadow: 0 0 10px rgba(64, 159, 255, 0.4);
+}
+
+.demo-letter.current {
+  background: linear-gradient(135deg, #409fff, #0088cc);
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(64, 159, 255, 0.8);
+  border-color: #409fff;
+  animation: currentLetter 1s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px rgba(64, 159, 255, 0.7);
+  font-weight: bold;
+}
+
+.demo-letter.pending {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.2);
+  opacity: 0.5;
+}
+
+.demo-combo-counter {
+  font-size: 2.5em;
+  font-weight: 900;
+  color: #c471ed;
+  text-shadow: 0 0 30px #c471ed;
+  font-family: "Courier New", monospace;
+  letter-spacing: 3px;
+  animation: subtleShake5 1.8s ease-in-out infinite;
+}
+
+.demo-combo-lost-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.demo-combo-lost-text {
+  font-size: 2em;
+  font-weight: 900;
+  color: #ff4444;
+  text-shadow: 0 0 30px #ff4444;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-family: "Courier New", monospace;
+  animation: comboLostAppear 1.5s ease-out infinite;
+}
+
+.demo-error-display {
+  font-size: 1.5em;
+  color: #ff4444;
+  text-shadow: 0 0 20px #ff4444;
+  padding: 20px;
+  border: 2px solid #ff4444;
+  border-radius: 10px;
+  background: rgba(255, 68, 68, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Tutorial Explanation */
+.tutorial-explanation {
+  background: rgba(10, 10, 10, 0.6);
+  padding: 25px;
+  border-radius: 15px;
+  border: 1px solid rgba(64, 159, 255, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.tutorial-explanation h3 {
+  color: #409fff;
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  text-shadow: 0 0 15px #409fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.tutorial-explanation ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.tutorial-explanation li {
+  margin: 12px 0;
+  padding-left: 20px;
+  position: relative;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+.tutorial-explanation li::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  color: #409fff;
+  text-shadow: 0 0 10px #409fff;
+}
+
+.tutorial-explanation strong {
+  color: #409fff;
+  text-shadow: 0 0 8px #409fff;
+}
+
+/* Demo Interactive Elements */
+.demo-synesthetic {
+  background: rgba(64, 159, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(64, 159, 255, 0.3);
+  margin: 15px 0;
+  text-align: center;
+}
+
+.demo-key {
+  display: inline-block;
+  background: linear-gradient(135deg, #409fff, #1e40af);
+  color: #ffffff;
+  padding: 8px 12px;
+  margin: 0 5px;
+  border-radius: 8px;
+  border: 2px solid rgba(64, 159, 255, 0.8);
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2em;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+}
+
+.demo-key:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(64, 159, 255, 0.6);
+}
+
+.demo-instruction {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9em;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.demo-combo-showcase,
+.demo-effects-showcase {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.demo-combo-showcase button,
+.demo-effects-showcase button {
+  background: linear-gradient(
+    135deg,
+    rgba(64, 159, 255, 0.2),
+    rgba(26, 26, 46, 0.8)
+  );
+  border: 2px solid rgba(64, 159, 255, 0.4);
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  font-size: 12px;
+}
+
+.demo-combo-showcase button:hover,
+.demo-effects-showcase button:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(64, 159, 255, 0.4),
+    rgba(26, 26, 46, 0.9)
+  );
+  border-color: rgba(64, 159, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(64, 159, 255, 0.3);
+}
+
+/* Point Calculation Demo */
+.demo-scoring {
+  position: relative;
+  padding: 20px;
+}
+
+.demo-scoring-formula {
+  background: rgba(64, 159, 255, 0.1);
+  border: 2px solid rgba(64, 159, 255, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  font-family: "Orbitron", sans-serif;
+}
+
+.formula-title {
+  color: #409fff;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px rgba(64, 159, 255, 0.5);
+}
+
+.formula-equation {
+  color: #ffffff;
+  font-size: 16px;
+  margin: 15px 0;
+  letter-spacing: 1px;
+}
+
+.formula-example {
+  color: #6dd5ed;
+  font-size: 14px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Settings Demo */
+.demo-settings {
+  position: relative;
+  padding: 20px;
+}
+
+.demo-settings-menu {
+  background: rgba(64, 159, 255, 0.1);
+  border: 2px solid rgba(64, 159, 255, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+  font-family: "Orbitron", sans-serif;
+  min-width: 250px;
+}
+
+.demo-settings-header {
+  color: #409fff;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px rgba(64, 159, 255, 0.5);
+}
+
+.demo-setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(64, 159, 255, 0.2);
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.demo-setting-item:last-child {
+  border-bottom: none;
+}
+
+.demo-toggle {
+  background: rgba(64, 159, 255, 0.2);
+  border: 1px solid rgba(64, 159, 255, 0.4);
+  border-radius: 15px;
+  padding: 4px 12px;
+  color: #409fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.demo-toggle.on {
+  background: rgba(64, 159, 255, 0.3);
+  box-shadow: 0 0 10px rgba(64, 159, 255, 0.3);
+}
+
+.demo-volume-slider {
+  position: relative;
+  width: 60px;
+  height: 8px;
+  background: rgba(64, 159, 255, 0.2);
+  border-radius: 4px;
+  margin: 0 10px;
+}
+
+.demo-volume-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(90deg, #409fff, #6dd5ed);
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(64, 159, 255, 0.5);
+}
+
+.settings-note {
+  margin-top: 15px;
+  color: #6dd5ed;
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Tutorial Navigation */
+.tutorial-next {
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
+  border: 2px solid rgba(64, 159, 255, 0.8);
+  color: #ffffff;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(64, 159, 255, 0.3);
+  text-shadow: 0 0 10px #409fff;
+  margin-top: 20px;
+}
+
+.tutorial-next:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 30px rgba(64, 159, 255, 0.6);
+  border-color: rgba(64, 159, 255, 1);
+}
+
+/* Final Step */
+.final-step {
+  text-align: center;
+}
+
+.tutorial-final-tips {
+  background: rgba(64, 159, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid rgba(64, 159, 255, 0.3);
+  margin: 20px 0;
+  text-align: left;
+}
+
+.tutorial-final-tips h4 {
+  color: #409fff;
+  text-shadow: 0 0 10px #409fff;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tutorial-final-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.tutorial-start-game {
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #0f0f23);
+  border: 3px solid rgba(64, 159, 255, 0.8);
+  color: #ffffff;
+  padding: 18px 35px;
+  font-size: 1.3em;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 30px rgba(64, 159, 255, 0.4);
+  text-shadow: 0 0 15px #409fff;
+}
+
+.tutorial-start-game:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 0 50px rgba(64, 159, 255, 0.8);
+  border-color: rgba(64, 159, 255, 1);
+}
+
+.tutorial-replay {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 46, 0.8),
+    rgba(15, 15, 35, 0.8)
+  );
+  border: 2px solid rgba(64, 159, 255, 0.4);
+  color: #ffffff;
+  padding: 15px 30px;
+  font-size: 1.1em;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.tutorial-replay:hover {
+  transform: translateY(-3px);
+  border-color: rgba(64, 159, 255, 0.7);
+  box-shadow: 0 8px 20px rgba(64, 159, 255, 0.3);
+}
+
+/* Tutorial Progress */
+.tutorial-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 2px solid rgba(64, 159, 255, 0.3);
+}
+
+.tutorial-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(64, 159, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-right: 20px;
+}
+
+.tutorial-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #409fff, #64b5f6);
+  width: 12.5%; /* 1/8 */
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(64, 159, 255, 0.6);
+}
+
+.tutorial-step-indicator {
+  color: #409fff;
+  font-weight: bold;
+  text-shadow: 0 0 10px #409fff;
+  font-size: 1.1em;
 }

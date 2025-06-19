@@ -267,7 +267,6 @@ class WordConstellation {
     document.getElementById("highScoreContainer").style.display = "block";
     document.getElementById("timeSelection").style.display = "flex";
     document.getElementById("settingsMenu").style.display = "block";
-    document.getElementById("escHint").style.display = "block";
     document.getElementById("timeSelection").classList.remove("disabled");
     document.getElementById("gameOver").style.display = "none";
     document.getElementById("gameOver").classList.add("hidden");
@@ -347,7 +346,6 @@ class WordConstellation {
       document.getElementById("highScoreContainer").style.display = "none";
       document.getElementById("timeSelection").style.display = "none";
       document.getElementById("settingsMenu").style.display = "none";
-      document.getElementById("escHint").style.display = "none";
       document.getElementById("gameOver").style.display = "flex";
       document.getElementById("gameOver").classList.remove("hidden");
 
@@ -2100,5 +2098,141 @@ function generateGameOverParticles() {
     particle.style.animationDelay = Math.random() * 15 + "s";
 
     gameOverParticleSystem.appendChild(particle);
+  }
+}
+
+// Tutorial System
+let currentTutorialStep = 0;
+const totalTutorialSteps = 10;
+
+function openTutorial() {
+  const tutorialOverlay = document.getElementById("tutorialOverlay");
+  tutorialOverlay.classList.remove("hidden");
+  currentTutorialStep = 0;
+  showTutorialStep(0);
+  updateTutorialProgress();
+}
+
+function closeTutorial() {
+  const tutorialOverlay = document.getElementById("tutorialOverlay");
+  tutorialOverlay.classList.add("hidden");
+}
+
+function nextTutorialStep() {
+  if (currentTutorialStep < totalTutorialSteps - 1) {
+    // Hide current step
+    const currentStep = document.querySelector(
+      `.tutorial-step[data-step="${currentTutorialStep}"]`
+    );
+    currentStep.classList.remove("active");
+
+    // Show next step
+    currentTutorialStep++;
+    showTutorialStep(currentTutorialStep);
+    updateTutorialProgress();
+  }
+}
+
+function showTutorialStep(step) {
+  const tutorialStep = document.querySelector(
+    `.tutorial-step[data-step="${step}"]`
+  );
+  if (tutorialStep) {
+    tutorialStep.classList.add("active");
+  }
+}
+
+function updateTutorialProgress() {
+  const progressFill = document.querySelector(".tutorial-progress-fill");
+  const currentStepSpan = document.querySelector(".tutorial-current-step");
+
+  const progressPercent =
+    ((currentTutorialStep + 1) / totalTutorialSteps) * 100;
+  progressFill.style.width = progressPercent + "%";
+  currentStepSpan.textContent = currentTutorialStep + 1;
+}
+
+function restartTutorial() {
+  currentTutorialStep = 0;
+  // Hide all steps
+  document.querySelectorAll(".tutorial-step").forEach((step) => {
+    step.classList.remove("active");
+  });
+  showTutorialStep(0);
+  updateTutorialProgress();
+}
+
+function startGameFromTutorial() {
+  closeTutorial();
+  if (game) {
+    game.startGame();
+  }
+}
+
+// Demo Functions for Tutorial
+function playDemoSound(letter) {
+  if (game && game.audioContext && !game.bgm.muted) {
+    game.playLetterNote(letter, 0.3);
+
+    // Create visual feedback
+    const demoKey = event.target;
+    demoKey.style.transform = "scale(1.2)";
+    demoKey.style.boxShadow = "0 0 25px rgba(64, 159, 255, 0.8)";
+
+    setTimeout(() => {
+      demoKey.style.transform = "scale(1.1)";
+      demoKey.style.boxShadow = "0 0 15px rgba(64, 159, 255, 0.6)";
+    }, 200);
+  }
+}
+
+function demoComboEffect(comboLevel) {
+  const demoComboCounter = document.querySelector(".demo-combo-counter");
+  if (!demoComboCounter) return;
+
+  // Update combo display
+  demoComboCounter.textContent = comboLevel + "x";
+
+  // Remove existing classes
+  demoComboCounter.className = "demo-combo-counter";
+
+  // Add appropriate streak class
+  if (comboLevel >= 10) {
+    demoComboCounter.classList.add("streak-10");
+    demoComboCounter.style.color = "#ffd700";
+    demoComboCounter.style.textShadow = "0 0 35px #ffd700";
+  } else if (comboLevel >= 5) {
+    demoComboCounter.classList.add("streak-5");
+    demoComboCounter.style.color = "#c471ed";
+    demoComboCounter.style.textShadow = "0 0 30px #c471ed";
+  } else if (comboLevel >= 3) {
+    demoComboCounter.classList.add("streak-3");
+    demoComboCounter.style.color = "#6dd5ed";
+    demoComboCounter.style.textShadow = "0 0 25px #6dd5ed";
+  }
+
+  // Add animation
+  demoComboCounter.style.animation = "none";
+  setTimeout(() => {
+    demoComboCounter.style.animation = "voidComboShake 0.6s ease-out";
+  }, 50);
+}
+
+function demoComboLoss() {
+  const demoComboLostText = document.querySelector(".demo-combo-lost-text");
+  const demoComboCounter = document.querySelector(".demo-combo-counter");
+
+  if (demoComboLostText && demoComboCounter) {
+    // Reset combo counter
+    demoComboCounter.textContent = "0x";
+    demoComboCounter.style.color = "#409fff";
+    demoComboCounter.style.textShadow = "0 0 20px #409fff";
+    demoComboCounter.className = "demo-combo-counter";
+
+    // Show combo lost animation
+    demoComboLostText.style.animation = "none";
+    setTimeout(() => {
+      demoComboLostText.style.animation = "comboLostAppear 1.5s ease-out";
+    }, 50);
   }
 }
